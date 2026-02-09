@@ -1,0 +1,1003 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-09 10:20+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Martin Fors\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: sv_SE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: esc_html__;esc_html_e;esc_attr__;esc_attr_e;__;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../include/classes.php:192
+msgid "You have to enter Client ID and Secret first"
+msgstr "Du behöver först ange Klient-ID och Klient-hemlighet"
+
+#: ../include/classes.php:221
+#: ../include/classes.php:223
+#: ../include/classes.php:368
+msgid "Customers"
+msgstr "Kunder"
+
+#: ../include/classes.php:222
+msgid "Customer"
+msgstr "Kund"
+
+#: ../include/classes.php:224
+msgid "List"
+msgstr "Lista"
+
+#: ../include/classes.php:225
+msgid "Edit"
+msgstr "Redigera"
+
+#: ../include/classes.php:226
+msgid "View"
+msgstr "Visa"
+
+#: ../include/classes.php:227
+msgid "Add New"
+msgstr "Lägg till ny"
+
+#: ../include/classes.php:247
+msgid "Client ID"
+msgstr "Klient-ID"
+
+#: ../include/classes.php:248
+msgid "Client Secret"
+msgstr "Klient-hemlighet"
+
+#: ../include/classes.php:249
+msgid "Endpoint"
+msgstr ""
+
+#: ../include/classes.php:253
+msgid "Authorization Code"
+msgstr "Auktoriseringskod"
+
+#: ../include/classes.php:254
+msgid "Access Token"
+msgstr "Access-token"
+
+#: ../include/classes.php:255
+msgid "Refresh Token"
+msgstr "Refresh-token"
+
+#: ../include/classes.php:258
+msgid "Debug"
+msgstr "Felsök"
+
+#: ../include/classes.php:283
+#: ../include/classes.php:365
+msgid "Fortnox"
+msgstr ""
+
+#: ../include/classes.php:314
+msgid "Generate Access Token"
+msgstr "Generera Access-token"
+
+#: ../include/classes.php:315
+msgid "Get Invoices"
+msgstr "Hämta fakturor"
+
+#: ../include/classes.php:327
+msgid "Get your code here"
+msgstr "Hämta din kod här"
+
+#: ../include/classes.php:355
+msgid "Run Now"
+msgstr "Kör nu"
+
+#: ../include/classes.php:373
+msgid "Settings"
+msgstr "Inställningar"
+
+#~ msgid "Orders"
+#~ msgstr "Ordrar"
+
+#~ msgid "Order"
+#~ msgstr "Beställning"
+
+#~ msgid "Items"
+#~ msgstr "Föremål"
+
+#~ msgid "Item"
+#~ msgstr "Föremål"
+
+#~ msgid "Products"
+#~ msgstr "Produkter"
+
+#~ msgid "Product"
+#~ msgstr "Produkt"
+
+#~ msgid "Subdomain"
+#~ msgstr "Underdomän"
+
+#~ msgid "API Version"
+#~ msgstr "API-version"
+
+#~ msgid "Go to the %sShopify admin section%s for the app to change scope"
+#~ msgstr "Gå till %sShopifys adminsektion%s för appen och ändra inställningar"
+
+#~ msgid "Contact"
+#~ msgstr "Kontakt"
+
+#~ msgid "Choose Here"
+#~ msgstr "Välj här"
+
+#~ msgid "Raw"
+#~ msgstr "Rådata"
+
+#~ msgid "Columns"
+#~ msgstr "Kolumner"
+
+#~ msgid "Properties"
+#~ msgstr "Fastigheter"
+
+#~ msgid "Is meta so column should be deleted"
+#~ msgstr "Är meta så kolumnen borde tas bort"
+
+#~ msgid "Has meta"
+#~ msgstr "Har meta"
+
+#~ msgid "No data"
+#~ msgstr "Ingen data"
+
+#~ msgid "Transactions"
+#~ msgstr "Transaktioner"
+
+#~ msgid "No files selected for import..."
+#~ msgstr "Inga filer valda för import..."
+
+#~ msgid "Search for property or address"
+#~ msgstr "Sök fastighet eller adress"
+
+#~ msgid "Search in the field above and the result will show up here"
+#~ msgstr "Sök i fältet ovan så kommer resultatet att visas här"
+
+#~ msgid "Log in to display this"
+#~ msgstr "Logga in för att visa detta"
+
+#~ msgid "The assignment was succesfully removed"
+#~ msgstr "Uppdraget togs bort"
+
+#~ msgid "Assignment Name"
+#~ msgstr "Uppdragsnamn"
+
+#~ msgid "Assignment Client"
+#~ msgstr "Uppdragsgivare"
+
+#~ msgid "Worth Date"
+#~ msgstr "Värdetidpunkt"
+
+#~ msgid "Calc Start"
+#~ msgstr "Kalkylstart"
+
+#~ msgid "Add to this assignment"
+#~ msgstr "Lägg till i detta uppdrag"
+
+#~ msgid "Delete"
+#~ msgstr "Radera"
+
+#~ msgid ""
+#~ "You have no assignment so far. %sCreate one%s and it will appear here."
+#~ msgstr ""
+#~ "Du har inget uppdrag ännu. %sSkapa ett%s så kommer det att dyka upp här."
+
+#~ msgid "Low"
+#~ msgstr "Låg"
+
+#~ msgid "High"
+#~ msgstr "Hög"
+
+#~ msgid "Loading..."
+#~ msgstr "Laddar..."
+
+#~ msgid "The property was succesfully removed"
+#~ msgstr "Fastigheten raderas från detta uppdrag"
+
+#~ msgid "The lease was succesfully removed"
+#~ msgstr "Hyresavtalet togs bort"
+
+#~ msgid "The Assignment"
+#~ msgstr "Uppdraget"
+
+#~ msgid "Add new Property"
+#~ msgstr "Lägg till ny fastighet"
+
+#~ msgid "Leases"
+#~ msgstr "Hyresavtal"
+
+#~ msgid "Comment"
+#~ msgstr "Kommentar"
+
+#~ msgid "Save"
+#~ msgstr "Spara"
+
+#~ msgid "Property ID"
+#~ msgstr "Fastighetsbeteckning"
+
+#~ msgid "Property Classification"
+#~ msgstr "Lägesklassificering"
+
+#~ msgid "Cancel editing"
+#~ msgstr "Avbryt redigering"
+
+#~ msgid "Update Property"
+#~ msgstr "Uppdatera fastighet"
+
+#~ msgid "Object"
+#~ msgstr "Objekt"
+
+#~ msgid "Search"
+#~ msgstr "Sök"
+
+#~ msgid "Property No"
+#~ msgstr "Objektnummer"
+
+#~ msgid "Building"
+#~ msgstr "Byggnad"
+
+#~ msgid "Land Area"
+#~ msgstr "Markareal"
+
+#~ msgid "Number of Buildings"
+#~ msgstr "Antal byggnader"
+
+#~ msgid "Quality"
+#~ msgstr "Byggkvalité"
+
+#~ msgid "Year of Construction"
+#~ msgstr "Byggnadsår"
+
+#~ msgid "Year of Renovation"
+#~ msgstr "Renoveringsår"
+
+#~ msgid "Building Owner"
+#~ msgstr "Fastighetsägare"
+
+#~ msgid "Organization Number"
+#~ msgstr "Organisationsnummer"
+
+#~ msgid "Property Owner"
+#~ msgstr "Fastighetsägare"
+
+#~ msgid "Owner Amount"
+#~ msgstr "Ägarandel"
+
+#~ msgid "Certification Type"
+#~ msgstr "Typ av certifiering"
+
+#~ msgid "Solar Cells Exist"
+#~ msgstr "Solceller finns"
+
+#~ msgid "Effect"
+#~ msgstr "Effekt"
+
+#~ msgid "Calculation Period"
+#~ msgstr "Kalkylperiod"
+
+#~ msgid "Operation and maintenance costs"
+#~ msgstr "Drifts- och underhållskostnader"
+
+#~ msgid "Tariff-based costs"
+#~ msgstr "Tariffbaserade kostnader"
+
+#~ msgid "USD"
+#~ msgstr "kr"
+
+#~ msgid "sqm"
+#~ msgstr "kvm"
+
+#~ msgid "Reparation & Maintenance"
+#~ msgstr "Reparation & underhåll"
+
+#~ msgid "Outdoor Areas"
+#~ msgstr "Utomhusytor"
+
+#~ msgid "General valuation parameters"
+#~ msgstr "Allmänna värderingsparametrar"
+
+#~ msgid "Dividend Yield"
+#~ msgstr "Direkavkastning"
+
+#~ msgid "Residual Value"
+#~ msgstr "Restvärde"
+
+#~ msgid "Net Capital"
+#~ msgstr "Nettokapital"
+
+#~ msgid "Price Range"
+#~ msgstr "Prisklass"
+
+#~ msgid "Discount rate"
+#~ msgstr "Diskonteringsränta"
+
+#~ msgid "Net Pay"
+#~ msgstr "Betalnetto"
+
+#~ msgid "Name"
+#~ msgstr "Namn"
+
+#~ msgid "Method"
+#~ msgstr "Metod"
+
+#~ msgid "Specification"
+#~ msgstr "Specifikation"
+
+#~ msgid "Market value adjustments"
+#~ msgstr "Justeringar av marknadsvärdet"
+
+#~ msgid "Site leasehold"
+#~ msgstr "Platshyresavtal"
+
+#~ msgid "Tenure day"
+#~ msgstr "Tjänstetillsättningsdag"
+
+#~ msgid "Purpose"
+#~ msgstr "Ändamål"
+
+#~ msgid "Closing fees at spring"
+#~ msgstr "Utgående avgäld vid vt"
+
+#~ msgid "Term of Charge"
+#~ msgstr "Avgäldsperiod"
+
+#~ msgid "Year"
+#~ msgstr "År"
+
+#~ msgid "Period date from"
+#~ msgstr "Perioddatum från"
+
+#~ msgid "Fees valid up to and including"
+#~ msgstr "Avgäld gällande t.o.m."
+
+#~ msgid "New assessed reasonable fee"
+#~ msgstr "Ny bedömd skälig avgäld"
+
+#~ msgid "New agreed fee"
+#~ msgstr "Ny avtalad avgäld"
+
+#~ msgid "Housing"
+#~ msgstr "Bostad"
+
+#~ msgid "Office"
+#~ msgstr "Kontor"
+
+#~ msgid "Industry, production or workshop"
+#~ msgstr "Industri, produktion och verkstad"
+
+#~ msgid "Parking or garage spaces, etc."
+#~ msgstr "Parkerings- och garaplatser m.m."
+
+#~ msgid "Vacancy rate"
+#~ msgstr "Vakansgrad"
+
+#~ msgid "Rental development"
+#~ msgstr "Hyresutveckling"
+
+#~ msgid "Investment"
+#~ msgstr "Investering"
+
+#~ msgid "Investments"
+#~ msgstr "Investeringar"
+
+#~ msgid "Description"
+#~ msgstr "Beskrivning"
+
+#~ msgid "Type"
+#~ msgstr "Typ"
+
+#~ msgid "Heading in Cash flow"
+#~ msgstr "Rubrik i kassaflöde"
+
+#~ msgid "Additions or deductions to cash flow"
+#~ msgstr "Tillägg/avdrag i kassaflödet"
+
+#~ msgid "Net Drift"
+#~ msgstr "Driftnetto"
+
+#~ msgid "Net Payment"
+#~ msgstr "Betalnetto"
+
+#~ msgid "Title"
+#~ msgstr "Rubrik"
+
+#~ msgid "Update Lease"
+#~ msgstr "Uppdatera hyresavtalet"
+
+#~ msgid "Unit"
+#~ msgstr "Enhet"
+
+#~ msgid "Lease Type"
+#~ msgstr "Typ av enhet"
+
+#~ msgid "Property"
+#~ msgstr "Fastighet"
+
+#~ msgid "Property Type"
+#~ msgstr "Fastighetstyp"
+
+#~ msgid "Amount"
+#~ msgstr "Antal"
+
+#~ msgid "Area"
+#~ msgstr "Yta"
+
+#~ msgid "Location in the building"
+#~ msgstr "Läge i byggnaden"
+
+#~ msgid "Lease Guest"
+#~ msgstr "Hyresgäst"
+
+#~ msgid "Organization No."
+#~ msgstr "Organisationsnummer"
+
+#~ msgid "From"
+#~ msgstr "From."
+
+#~ msgid "To"
+#~ msgstr "Tom."
+
+#~ msgid "Extension"
+#~ msgstr "Förlängningsvillkor"
+
+#~ msgid "months"
+#~ msgstr "månader"
+
+#~ msgid "Notice Period"
+#~ msgstr "Uppsägningstid"
+
+#~ msgid "VAT"
+#~ msgstr "Moms"
+
+#~ msgid "Rent Supplement"
+#~ msgstr "Hyrestillägg"
+
+#~ msgid "Property Tax"
+#~ msgstr "Fastighetsskatt"
+
+#~ msgid "Heating"
+#~ msgstr "Värme"
+
+#~ msgid "Cooling"
+#~ msgstr "Kyla"
+
+#~ msgid "Water"
+#~ msgstr "Vatten"
+
+#~ msgid "Electricity"
+#~ msgstr "El"
+
+#~ msgid "Renovation Supplement"
+#~ msgstr "Renoveringstillägg"
+
+#~ msgid "USD / year"
+#~ msgstr "kr / år"
+
+#~ msgid "Rent"
+#~ msgstr "Hyra"
+
+#~ msgid "Base"
+#~ msgstr "Bashyra"
+
+#~ msgid "Turnover"
+#~ msgstr "Omsättning"
+
+#~ msgid "Month"
+#~ msgstr "Månad"
+
+#~ msgid "Part"
+#~ msgstr "Andel"
+
+#~ msgid "Interval for increase"
+#~ msgstr "Intervall för uppräkning"
+
+#~ msgid "Fixed Yearly Increase"
+#~ msgstr "Fast årlig uppräkning"
+
+#~ msgid "Ends"
+#~ msgstr "Slutar"
+
+#~ msgid "Rent Discounts"
+#~ msgstr "Hyresrabatter"
+
+#~ msgid "Map"
+#~ msgstr "Karta"
+
+#~ msgid "Display a Map"
+#~ msgstr "Visa en karta"
+
+#~ msgid "Create Assignment"
+#~ msgstr "Skapa uppdrag"
+
+#~ msgid "Display form to create assignment"
+#~ msgstr "Visa formulär för att skapa uppdrag"
+
+#~ msgid "Assignments List"
+#~ msgstr "Uppdragslista"
+
+#~ msgid "Display Assignments List"
+#~ msgstr "Visa uppdragslista"
+
+#~ msgid "Real Estate"
+#~ msgstr "Fastigheter"
+
+#~ msgid "Real Estate Type"
+#~ msgstr "Fastigheterstyp"
+
+#~ msgid "Assignments"
+#~ msgstr "Uppdrag"
+
+#~ msgid "Assignment"
+#~ msgstr "Uppdrag"
+
+#~ msgid "Lease"
+#~ msgstr "Hyresavtal"
+
+#~ msgid "Files"
+#~ msgstr "Filer"
+
+#~ msgid "Ignore Type"
+#~ msgstr "Ignorera typ"
+
+#~ msgid "Type is Property"
+#~ msgstr "Typen tillhör fastighet"
+
+#~ msgid "Type is Meta"
+#~ msgstr "Typen är meta"
+
+#~ msgid "Boverket API Key"
+#~ msgstr "Boverkets API-nyckel"
+
+#~ msgid "Property Fallback Image"
+#~ msgstr "Standardbild för fastigheter"
+
+#~ msgid "Is Number"
+#~ msgstr "Är ett nummer"
+
+#~ msgid "There are more"
+#~ msgstr "Det finns fler"
+
+#~ msgid "I could not find any matches for you. Try something else."
+#~ msgstr "Jag kunde inte hitta någon träff åt dig. Försök med något annat."
+
+#~ msgid ""
+#~ "I am sorry, but you don't seam to have the proper rights to perform this "
+#~ "action."
+#~ msgstr ""
+#~ "Jag är ledsen, men du verkar inte ha rätt behörighet för att kunna utföra "
+#~ "detta."
+
+#~ msgid "none"
+#~ msgstr "inget"
+
+#~ msgid "could not be found"
+#~ msgstr "kunde inte hittas"
+
+#~ msgid "Energy Class"
+#~ msgstr "Energiklass"
+
+#~ msgid "Energy Performance"
+#~ msgstr "Energiprestanda"
+
+#~ msgid "Energy Declaration"
+#~ msgstr "Energideklaration"
+
+#~ msgid "Land"
+#~ msgstr "Mark"
+
+#~ msgid "Add to Assignment"
+#~ msgstr "Lägg till i befintligt uppdrag"
+
+#~ msgid "The assignment was succesfully updated"
+#~ msgstr "Uppdraget uppdaterades"
+
+#~ msgid "The assignment could not be updated"
+#~ msgstr "Uppdraget kunde inte uppdateras"
+
+#~ msgid ""
+#~ "The assignment was created but I could not find a page to redirect you to"
+#~ msgstr ""
+#~ "Uppdraget skapades men jag kunde inte hitta en sida att skicka vidare dig "
+#~ "till"
+
+#~ msgid "The assignment could not be created"
+#~ msgstr "Uppdraget kunde inte skapas"
+
+#~ msgid "The property was succesfully updated"
+#~ msgstr "Fastigheten uppdaterades"
+
+#~ msgid "The property could not be updated"
+#~ msgstr "Fastigheten kunde inte uppdateras"
+
+#~ msgid ""
+#~ "The property was added but I could not find a page to redirect you to"
+#~ msgstr ""
+#~ "Fastigheten lades till men jag kunde inte hitta en sida att skicka vidare "
+#~ "dig till"
+
+#~ msgid "The property could not be added to the assignment"
+#~ msgstr "Fastigheten kunde inte läggas till i uppdraget"
+
+#~ msgid "The lease was succesfully updated"
+#~ msgstr "Hyresavtalet uppdaterades"
+
+#~ msgid "The lease could not be updated"
+#~ msgstr "Hyresavtalet kunde inte uppdateras"
+
+#~ msgid "The lease was added but I could not find a page to redirect you to"
+#~ msgstr ""
+#~ "Hyresavtalet lades till men jag kunde inte hitta en sida att skicka "
+#~ "vidare dig till"
+
+#~ msgid "The lease could not be added to the assignment"
+#~ msgstr "Hyresavtalet kunde inte läggas till i uppdraget"
+
+#~ msgid "Update"
+#~ msgstr "Uppdatera"
+
+#~ msgid "Create"
+#~ msgstr "Skapa"
+
+#~ msgid "Add"
+#~ msgstr "Lägg till"
+
+#~ msgid "Start Date"
+#~ msgstr "Start"
+
+#~ msgid "End Date"
+#~ msgstr "Slut"
+
+#~ msgid "Lease Agreements"
+#~ msgstr "Hyresavtal"
+
+#~ msgid "Lease Agreement"
+#~ msgstr "Hyresavtalet"
+
+#~ msgid ""
+#~ "The property was succesfully removed because there was no Property ID"
+#~ msgstr ""
+#~ "Fastigheten togs bort eftersom det inte fanns någon angiven "
+#~ "fastighetsbeteckning"
+
+#~ msgid "The property could not be removed"
+#~ msgstr "Fastigheten kunde inte raderas"
+
+#~ msgid ""
+#~ "The property was not added to the assignment because you did not enter a "
+#~ "property ID"
+#~ msgstr ""
+#~ "Fastigheten lades inte till i uppdraget eftersom det inte hade någon "
+#~ "angiven fastighetsbeteckning"
+
+#~ msgid "The property was succesfully added to the assignment"
+#~ msgstr "Fastigheten lades till i uppdraget"
+
+#~ msgid "The assignment could not be found"
+#~ msgstr "Uppdraget kunde inte hittas"
+
+#~ msgid "The property could not be found"
+#~ msgstr "Fastigheten kunde inte hittas"
+
+#~ msgid "within %d meters"
+#~ msgstr "inom %d meter"
+
+#~ msgid "General"
+#~ msgstr "Allmänt"
+
+#~ msgid "Objects without area"
+#~ msgstr "Objekt utan area"
+
+#~ msgid "Parameters"
+#~ msgstr "Parametrar"
+
+#~ msgid "Reparation"
+#~ msgstr "Reparation"
+
+#~ msgid "Maintenance"
+#~ msgstr "Underhåll"
+
+#~ msgid "Other operations"
+#~ msgstr "Övrig drift"
+
+#~ msgid "Property Management"
+#~ msgstr "Fastighetsadministration"
+
+#~ msgid "No Adjustments"
+#~ msgstr "Inga justeringar"
+
+#~ msgid "Filtered"
+#~ msgstr "Filtrerat"
+
+#~ msgid "Something went wrong. An admin has been notified."
+#~ msgstr "Något gick fel. En admin har blivit notifierad."
+
+#~ msgid "Environment Certification"
+#~ msgstr "Miljöcertifiering av byggnad"
+
+#~ msgid "Solar Cells"
+#~ msgstr "Solceller"
+
+#~ msgid "You have to choose a transaction"
+#~ msgstr "Du behöver välja en transaktion"
+
+#~ msgid "You have to add a calculation"
+#~ msgstr "Du behöver lägga till en formel"
+
+#~ msgid "Entered"
+#~ msgstr "Angivet"
+
+#~ msgid "Error in calculation"
+#~ msgstr "Fel vid uträkning"
+
+#~ msgid "Invalid input"
+#~ msgstr "Felaktig inmatning"
+
+#~ msgid "Calculate"
+#~ msgstr "Räkna ut"
+
+#~ msgid "Manager"
+#~ msgstr "Fastighetsägare"
+
+#~ msgid "Display Real Estate"
+#~ msgstr "Visa fastigheter"
+
+#~ msgid "Welcome %s!"
+#~ msgstr "Välkommen %s!"
+
+#~ msgid ""
+#~ "The username or password was wrong. Make sure that it is correct and try "
+#~ "again."
+#~ msgstr ""
+#~ "Användarnamnet eller lösenordet var fel. Se till så att det är korrekt "
+#~ "och försök igen."
+
+#~ msgid "You have to enter your username and password"
+#~ msgstr "Du behöver ange ditt användarnamn och lösenord"
+
+#~ msgid "Something went wrong when I tried to log out for you!"
+#~ msgstr "Något gick fel när jag försökte logga ut dig!"
+
+#~ msgid "You are now logged out!"
+#~ msgstr "Du är utloggad nu!"
+
+#~ msgid "Redirecting to %s in %s seconds"
+#~ msgstr "Skickar vidare till %s om %s sekunder"
+
+#~ msgid "You are logged in. Do you want to %slog out%s?"
+#~ msgstr "Du är inloggad. Vill du %slogga ut%s?"
+
+#~ msgid "Username"
+#~ msgstr "Användarnamn"
+
+#~ msgid "Password"
+#~ msgstr "Lösenord"
+
+#~ msgid "Send"
+#~ msgstr "Skicka"
+
+#~ msgid "Have you forgotten your username? %sRequest it here%s"
+#~ msgstr "Glömt ditt användarnamn? %sSkicka efter det här%s"
+
+#~ msgid "Have you forgotten your password? %sReset it here%s"
+#~ msgstr "Glömt ditt lösenord? %sÅterställ det här%s"
+
+#~ msgid "District"
+#~ msgstr "Distrikt"
+
+#~ msgid "I could not find any clubs"
+#~ msgstr "Jag kunde inte hitta några klubbar"
+
+#~ msgid "OTS Clubs"
+#~ msgstr "OTS-klubbar"
+
+#~ msgid "OTS Club"
+#~ msgstr "OTS-klubb"
+
+#~ msgid "OTS Members"
+#~ msgstr "OTS-medlemmar"
+
+#~ msgid "OTS Member"
+#~ msgstr "OTS-medlemmar"
+
+#~ msgid "Login"
+#~ msgstr "Inloggning"
+
+#~ msgid "Display Login"
+#~ msgstr "Visa inloggning"
+
+#~ msgid "API key"
+#~ msgstr "API-nyckel"
+
+#~ msgid "Calendar"
+#~ msgstr "Kalender"
+
+#~ msgid "Rows"
+#~ msgstr "Rader"
+
+#~ msgid "Activities"
+#~ msgstr "Aktiviteter"
+
+#~ msgid "Groups"
+#~ msgstr "Grupper"
+
+#~ msgid "News"
+#~ msgstr "Nyheter"
+
+#~ msgid "Members"
+#~ msgstr "Medlemmar"
+
+#~ msgid "Club"
+#~ msgstr "Klubb"
+
+#~ msgid "First Name"
+#~ msgstr "Förnamn"
+
+#~ msgid "E-mail"
+#~ msgstr "E-post"
+
+#~ msgid "Photo"
+#~ msgstr "Foto"
+
+#~ msgid "Visibility"
+#~ msgstr "Synlighet"
+
+#~ msgid "Member ID"
+#~ msgstr "Medlems-ID"
+
+#~ msgid "This is only visible because you have logged in"
+#~ msgstr "Detta visas för dig bara för att du har loggat in"
+
+#~ msgid "Log in to see this"
+#~ msgstr "Logga in för att se detta"
+
+#~ msgid "Log in to see this meeting"
+#~ msgstr "Logga in för att se detta möte"
+
+#~ msgid "Log in to see the meeting"
+#~ msgstr "Logga in för att se mötet"
+
+#~ msgid "Log in to see more about this"
+#~ msgstr "Logga in för att se mer om detta"
+
+#~ msgid "Log in to see more about this meeting"
+#~ msgstr "Logga in för att se mer om detta möte"
+
+#~ msgid "Log in to read about this"
+#~ msgstr "Logga in för att läsa mer om detta"
+
+#~ msgid "Log in to read about this meeting"
+#~ msgstr "Logga in för att läsa mer om detta möte"
+
+#~ msgid "Log in to read about the meeting"
+#~ msgstr "Logga in för att läsa om mötet"
+
+#~ msgid "Log in to read more about this"
+#~ msgstr "Logga in för att läsa mer om detta"
+
+#~ msgid "Log in to read more about this meeting"
+#~ msgstr "Logga in för att läsa mer om detta möte"
+
+#~ msgid "Ha! This is also hidden..."
+#~ msgstr "Ha! Detta är också dolt..."
+
+#~ msgid "Sorry! Also hidden. Are you getting curious about logging in?"
+#~ msgstr "Ledsen! Också dold. Börjar du bli nyfiken på att logga in?"
+
+#~ msgid "Login to see all information"
+#~ msgstr "Logga in för att se all information"
+
+#~ msgid "Go to the meeting on 41er.World"
+#~ msgstr "Gå till mötet på 41er.World"
+
+#~ msgid ""
+#~ "The club has not shared this event. %sContact the board%s or %sgo to the "
+#~ "club site%s."
+#~ msgstr ""
+#~ "Klubben har inte delat mötet. %sKontakta styrelsen%s eller %sgå till "
+#~ "klubbens sida%s."
+
+#~ msgid "Search for Meetings"
+#~ msgstr "Sök möten"
+
+#~ msgid "%sLog in%s to view all activities"
+#~ msgstr "%sLogga in%s för att se alla möten"
+
+#, fuzzy
+#~ msgid "Log in to read this"
+#~ msgstr "Logga in för att se detta"
+
+#, fuzzy
+#~ msgid "Log in to read this meeting"
+#~ msgstr "Logga in för att se detta"
+
+#~ msgid "This is visible to everyone"
+#~ msgstr "Detta visas för alla besökare"
+
+#~ msgid ""
+#~ "There is already another site with that domain. %sConfirm nameservers "
+#~ "there instead%s"
+#~ msgstr ""
+#~ "Det finns redan en annan webbplats med denna domän. %sBekräfta "
+#~ "namnservrar där istället%s"
+
+#~ msgid ""
+#~ "Something went wrong. If the problem persists, contact an admin about this"
+#~ msgstr ""
+#~ "Något gick fel. Om problemet kvarstår, kontakta en administratör angående "
+#~ "detta"
+
+#~ msgid "Nameservers"
+#~ msgstr "Namnservrar"
+
+#~ msgid "I could not parse the information from %s"
+#~ msgstr "Jag kunde inte tolka informationen från %s"
+
+#~ msgid "Source"
+#~ msgstr "Källa"
+
+#~ msgid ""
+#~ "I could not get any information from %s. You might not be allowed to "
+#~ "access this information by your web host."
+#~ msgstr ""
+#~ "Jag kunde inte hämta någon information från %s. Du kanske inte är "
+#~ "tillåten att hämta denna information för webbhotellet."
+
+#~ msgid "Nameservers for %s has changed"
+#~ msgstr "Namnservrarna för %s har ändrats"
+
+#~ msgid "The nameservers for %s was confirmed to be %s and %s."
+#~ msgstr "Namnservrarna för %s har bekräftats vara %s och %s."
+
+#~ msgid ""
+#~ "Until now that has not changed but %s they were changed to %s and %s. If "
+#~ "this is correct, please go to %sSettings%s and confirm the change and I "
+#~ "will keep an eye on them so that they do not change."
+#~ msgstr ""
+#~ "Fram tills nu har detta inte ändrats men %s ändrades det till %s och %s. "
+#~ "Om detta är korrekt, var vänlig gå till %sInställningar%s och bekräfta "
+#~ "öndringen så håller jag ett öga på dom så att de inte ändras."
+
+#~ msgid ""
+#~ "If you suspect that this is in any way wrong, do have a look at what has "
+#~ "caused this change."
+#~ msgstr ""
+#~ "Om du misstänker att detta på något sätt är fel, kolla på vad som kan ha "
+#~ "orsakat ändringen."
+
+#~ msgid "Confirm Nameservers"
+#~ msgstr "Bekräfta namnservrar"
+
+#~ msgid "Report to E-mail"
+#~ msgstr "Rapportera till e-post"
+
+#~ msgid "Nameserver"
+#~ msgstr "Namnserver"
+
+#~ msgid "by %s %s"
+#~ msgstr "av %s %s"
+
+#~ msgid "Confirm"
+#~ msgstr "Bekräfta"
+
+#~ msgid "Please choose who should be notified if the nameservers change"
+#~ msgstr "Var vänlig välj vem som ska bli meddelad om namnservrarna ändras"
+
+#~ msgid "I successfully saved the confirmation for you"
+#~ msgstr "Jag lyckades spara bekräftelsen åt dig"
+
+#~ msgid "I could not save the information for you"
+#~ msgstr "Jag kunde inte spara informationen åt dig"
+
+#~ msgid "Wrong Type"
+#~ msgstr "Fel typ"
+
+#~ msgid "Wrong IP"
+#~ msgstr "Fel IP"
