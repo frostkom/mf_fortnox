@@ -3,14 +3,14 @@
 Plugin Name: MF Fortnox
 Plugin URI: https://github.com/frostkom/mf_fortnox
 Description: Adds support for communicating with the Fortnox API
-Version: 1.0.0
+Version: 1.0.1
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://martinfors.se
 Text Domain: lang_fortnox
 Domain Path: /lang
 
-Documentation: https://apps.fortnox.se/apidocs
+Documentation: https://api.fortnox.se/apidocs
 */
 
 if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') && is_plugin_active("mf_base/index.php"))
@@ -33,6 +33,8 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 
 		add_filter('manage_'.$obj_fortnox->post_type.'_posts_columns', array($obj_fortnox, 'column_header'), 5);
 		add_action('manage_'.$obj_fortnox->post_type.'_posts_custom_column', array($obj_fortnox, 'column_cell'), 5, 2);
+		add_filter('manage_'.$obj_fortnox->post_type_vouchers.'_posts_columns', array($obj_fortnox, 'column_header'), 5);
+		add_action('manage_'.$obj_fortnox->post_type_vouchers.'_posts_custom_column', array($obj_fortnox, 'column_cell'), 5, 2);
 
 		add_action('rwmb_meta_boxes', array($obj_fortnox, 'rwmb_meta_boxes'));
 	}
