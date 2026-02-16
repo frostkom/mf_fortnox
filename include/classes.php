@@ -13,6 +13,72 @@ class mf_fortnox
 		$this->meta_prefix = $this->post_type.'_';
 	}
 
+	function get_voucher_info($arr_voucher, $post_data)
+	{
+		$voucher_account = $voucher_amount = $voucher_excerpt = $voucher_content = "";
+
+		if(isset($arr_voucher['@url']) && $arr_voucher['@url'] != '')
+		{
+			$arr_voucher_info = $this->fetch_from_api(['endpoint' => 'voucher', 'url' => $arr_voucher['@url'], 'action' => 'insert']);
+
+			//do_log(__FUNCTION__.": ".var_export($arr_voucher_info, true));
+
+			/*'Voucher' => array (
+				'@url' => 'https://api.fortnox.se/3/vouchers/A/12?financialyear=1',
+				'Comments' => NULL,
+				'CostCenter' => '',
+				'Description' => 'Inbetalning medlemsavgift Swish / [name]',
+				'Project' => '',
+				'ReferenceNumber' => '',
+				'ReferenceType' => '',
+				'TransactionDate' => 'YYYY-MM-DD',
+				'VoucherNumber' => 12,
+				'VoucherRows' => array (
+					0 => array (
+						'Account' => 1901,
+						'CostCenter' => '',
+						'Credit' => 0,
+						'Description' => 'Swish Nordea',
+						'Debit' => 500,
+						'Project' => '',
+						'Removed' => false,
+						'TransactionInformation' => '[info] 1802936198795036 / Swishnummer: 1232335578',
+						'Quantity' => 0,
+					),
+					1 => array (
+						'Account' => 3000,
+						'CostCenter' => '',
+						'Credit' => 500,
+						'Description' => 'Försäljning inom Sverige',
+						'Debit' => 0,
+						'Project' => '',
+						'Removed' => false,
+						'TransactionInformation' => '[info] 1802936198795036 / Swishnummer: 1232335578',
+						'Quantity' => 0,
+					),
+				),
+				'VoucherSeries' => 'A',
+				'Year' => 1,
+				'ApprovalState' => 0,
+			)*/
+
+			if(isset($arr_voucher_info['array']))
+			{
+				$voucher_account = $arr_voucher_info['array']['Voucher']['VoucherRows'][0]['Account'];
+				$voucher_amount = $arr_voucher_info['array']['Voucher']['VoucherRows'][0]['Debit'];
+				$voucher_excerpt = $arr_voucher_info['array']['Voucher']['VoucherRows'][0]['Description'];
+				$voucher_content = $arr_voucher_info['array']['Voucher']['VoucherRows'][0]['TransactionInformation'];
+			}
+		}
+
+		$post_data['post_excerpt'] = $voucher_excerpt;
+		$post_data['post_content'] = $voucher_content;
+		$post_data['meta_input'][$this->meta_prefix.'voucher_account'] = $voucher_account;
+		$post_data['meta_input'][$this->meta_prefix.'voucher_amount'] = $voucher_amount;
+
+		return $post_data;
+	}
+
 	function fetch_from_api($data)
 	{
 		global $wpdb, $obj_base;
@@ -424,69 +490,18 @@ class mf_fortnox
 										$voucher_amount = "";
 										$voucher_created = date("Y-m-d H:i:s", strtotime($arr_voucher['TransactionDate']." 00:00:00"));
 
-										if(isset($arr_voucher['@url']) && $arr_voucher['@url'] != '')
-										{
-											$arr_voucher_info = $this->fetch_from_api(['endpoint' => 'voucher', 'url' => $arr_voucher['@url'], 'action' => 'insert']);
-
-											//do_log(__FUNCTION__.": ".var_export($arr_voucher_info, true));
-
-											/*'Voucher' => array (
-												'@url' => 'https://api.fortnox.se/3/vouchers/A/12?financialyear=1',
-												'Comments' => NULL,
-												'CostCenter' => '',
-												'Description' => 'Inbetalning medlemsavgift Swish / [name]',
-												'Project' => '',
-												'ReferenceNumber' => '',
-												'ReferenceType' => '',
-												'TransactionDate' => 'YYYY-MM-DD',
-												'VoucherNumber' => 12,
-												'VoucherRows' => array (
-													0 => array (
-														'Account' => 1901,
-														'CostCenter' => '',
-														'Credit' => 0,
-														'Description' => 'Swish Nordea',
-														'Debit' => 500,
-														'Project' => '',
-														'Removed' => false,
-														'TransactionInformation' => '[info] 1802936198795036 / Swishnummer: 1232335578',
-														'Quantity' => 0,
-													),
-													1 => array (
-														'Account' => 3000,
-														'CostCenter' => '',
-														'Credit' => 500,
-														'Description' => 'Försäljning inom Sverige',
-														'Debit' => 0,
-														'Project' => '',
-														'Removed' => false,
-														'TransactionInformation' => '[info] 1802936198795036 / Swishnummer: 1232335578',
-														'Quantity' => 0,
-													),
-												),
-												'VoucherSeries' => 'A',
-												'Year' => 1,
-												'ApprovalState' => 0,
-											)*/
-
-											$voucher_account = $arr_voucher_info['array']['Voucher']['VoucherRows'][0]['Account'];
-											$voucher_amount = $arr_voucher_info['array']['Voucher']['VoucherRows'][0]['Debit'];
-											$voucher_excerpt = $arr_voucher_info['array']['Voucher']['VoucherRows'][0]['Description'];
-											$voucher_content = $arr_voucher_info['array']['Voucher']['VoucherRows'][0]['TransactionInformation'];
-										}
-
 										//$arr_voucher_tags = $arr_voucher['tags'];
 
 										$post_data = array(
 											'post_type' => $this->post_type_vouchers,
 											'post_status' => 'publish',
 											'post_title' => $voucher_name,
-											'post_excerpt' => $voucher_excerpt,
-											'post_content' => $voucher_content,
+											//'post_excerpt' => $voucher_excerpt,
+											//'post_content' => $voucher_content,
 											'meta_input' => array(
 												$this->meta_prefix.'voucher_id' => $voucher_id,
-												$this->meta_prefix.'voucher_account' => $voucher_account,
-												$this->meta_prefix.'voucher_amount' => $voucher_amount,
+												//$this->meta_prefix.'voucher_account' => $voucher_account,
+												//$this->meta_prefix.'voucher_amount' => $voucher_amount,
 												$this->meta_prefix.'voucher_reference_no' => $voucher_reference_no,
 												$this->meta_prefix.'voucher_reference_type' => $voucher_reference_type,
 												$this->meta_prefix.'voucher_number' => $voucher_number,
@@ -518,8 +533,10 @@ class mf_fortnox
 														$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $voucher_created, $post_voucher_id));
 													}
 
-													if(1 == 1)
+													if(1 == 2)
 													{
+														$post_data = $this->get_voucher_info($arr_voucher, $post_data);
+
 														$post_data['ID'] = $post_voucher_id;
 														$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
 
@@ -538,6 +555,8 @@ class mf_fortnox
 
 										else
 										{
+											$post_data = $this->get_voucher_info($arr_voucher, $post_data);
+
 											$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
 
 											$post_voucher_id = wp_insert_post($post_data);
