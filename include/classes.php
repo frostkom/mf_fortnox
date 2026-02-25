@@ -238,7 +238,7 @@ class mf_fortnox
 							if(isset($arr_json['CompanyInformation']['DatabaseNumber']) && $arr_json['CompanyInformation']['DatabaseNumber'] != '')
 							{
 								update_option('option_fortnox_database_number', $arr_json['CompanyInformation']['DatabaseNumber'], false); // Then -> https://www.fortnox.se/developer/authorization/get-access-token-using-client-credentials
-							}						
+							}
 
 							switch($data['action'])
 							{
@@ -939,7 +939,7 @@ class mf_fortnox
 			echo "<p>".__("Refresh Token", 'lang_fortnox').": ".shorten_text(array('string' => $setting_fortnox_refresh_token, 'limit' => 10))."</p>";
 		}
 	}
-	
+
 	function setting_fortnox_authorization_code_callback() // https://www.fortnox.se/developer/authorization/get-authorization-code
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
@@ -953,7 +953,7 @@ class mf_fortnox
 		$setting_key = get_setting_key(__FUNCTION__);
 		$option = get_option($setting_key);
 
-		echo show_textfield(array('name' => $setting_key, 'value' => $option));	
+		echo show_textfield(array('name' => $setting_key, 'value' => $option));
 	}
 
 	function setting_fortnox_refresh_token_callback()
@@ -961,7 +961,7 @@ class mf_fortnox
 		$setting_key = get_setting_key(__FUNCTION__);
 		$option = get_option($setting_key);
 
-		echo show_textfield(array('name' => $setting_key, 'value' => $option));	
+		echo show_textfield(array('name' => $setting_key, 'value' => $option));
 	}
 
 	function setting_fortnox_endpoint_callback()
