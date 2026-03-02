@@ -190,6 +190,24 @@ class mf_fortnox
 						break;
 
 						default:
+							$arr_json = json_decode($content, true);
+
+							// {"error":"invalid_client","error_description":"The client credentials are invalid"}
+
+							if(isset($arr_json['error']) && $arr_json['error'] == "invalid_client")
+							{
+								switch($data['endpoint'])
+								{
+									case 'generate_access_token':
+										delete_option('setting_fortnox_authorization_code');
+									break;
+
+									case 'generate_access_token_from_refresh':
+										delete_option('setting_fortnox_refresh_token');
+									break;
+								}
+							}
+
 							$log_message = __FUNCTION__.": Did you use the right endpoint and Auth Token? (".$url." => ".$headers['http_code']." => ".$content.")";
 
 							switch($data['action'])
@@ -430,6 +448,7 @@ class mf_fortnox
 
 				case 'vouchers':
 					$url = "https://api.fortnox.se/3/vouchers/?voucherseries=A"; //&accountnumber=1901
+					//https://api.fortnox.se/3/vouchers/?voucherseries=A&page=2
 
 					$setting_fortnox_access_token = get_option('setting_fortnox_access_token');
 
