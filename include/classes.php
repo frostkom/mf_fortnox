@@ -452,170 +452,182 @@ class mf_fortnox
 
 					$setting_fortnox_access_token = get_option('setting_fortnox_access_token');
 
-					$arr_headers = [
-						'Content-Type: application/json',
-						'Authorization: Bearer '.$setting_fortnox_access_token,
-					];
-
-					list($content, $headers) = get_url_content(array(
-						'url' => $url,
-						'catch_head' => true,
-						'headers' => $arr_headers,
-					));
-
-					switch($headers['http_code'])
+					if($setting_fortnox_access_token != '')
 					{
-						case 200:
-						case 201:
-							$arr_json = json_decode($content, true);
+						$arr_headers = [
+							'Content-Type: application/json',
+							'Authorization: Bearer '.$setting_fortnox_access_token,
+						];
 
-							switch($data['action'])
-							{
-								case 'insert':
-									/*array (
-										'MetaInformation' => array (
-											'@TotalResources' => 164,
-											'@TotalPages' => 2,
-											'@CurrentPage' => 1,
-										),
-										'Vouchers' => array (
-											0 => array (
-												'@url' => 'https://api.fortnox.se/3/vouchers/A/1?financialyear=1',
-												'Comments' => NULL,
-												'Description' => 'Inbetalning medlemsavgift Swish / [Name] [Name]',
-												'ReferenceNumber' => '',
-												'ReferenceType' => '',
-												'TransactionDate' => 'YYYY-MM-DD',
-												'VoucherNumber' => 1,
-												'VoucherSeries' => 'A',
-												'Year' => 1,
-												'ApprovalState' => 0,
-											)
-										)
-									)*/
+						list($content, $headers) = get_url_content(array(
+							'url' => $url,
+							'catch_head' => true,
+							'headers' => $arr_headers,
+						));
 
-									foreach($arr_json['Vouchers'] as $arr_voucher)
-									{
-										$voucher_id = $arr_voucher['Year'].":".$arr_voucher['VoucherSeries'].":".$arr_voucher['VoucherNumber'];
-										$voucher_name = $arr_voucher['Description'];
-										$voucher_excerpt = "";
-										$voucher_content = $arr_voucher['Comments'];
-										$voucher_reference_no = $arr_voucher['ReferenceNumber'];
-										$voucher_reference_type = $arr_voucher['ReferenceType'];
-										$voucher_number = $arr_voucher['VoucherNumber'];
-										$voucher_series = $arr_voucher['VoucherSeries'];
-										$voucher_year = $arr_voucher['Year'];
-										$voucher_approval_state = $arr_voucher['ApprovalState'];
-										$voucher_amount = "";
-										$voucher_created = date("Y-m-d H:i:s", strtotime($arr_voucher['TransactionDate']." 00:00:00"));
+						switch($headers['http_code'])
+						{
+							case 200:
+							case 201:
+								$arr_json = json_decode($content, true);
 
-										//$arr_voucher_tags = $arr_voucher['tags'];
-
-										$post_data = array(
-											'post_type' => $this->post_type_vouchers,
-											'post_status' => 'publish',
-											'post_title' => $voucher_name,
-											//'post_excerpt' => $voucher_excerpt,
-											//'post_content' => $voucher_content,
-											'meta_input' => array(
-												$this->meta_prefix.'voucher_id' => $voucher_id,
-												//$this->meta_prefix.'voucher_account' => $voucher_account,
-												//$this->meta_prefix.'voucher_amount' => $voucher_amount,
-												$this->meta_prefix.'voucher_reference_no' => $voucher_reference_no,
-												$this->meta_prefix.'voucher_reference_type' => $voucher_reference_type,
-												$this->meta_prefix.'voucher_number' => $voucher_number,
-												$this->meta_prefix.'voucher_series' => $voucher_series,
-												$this->meta_prefix.'voucher_year' => $voucher_year,
-												$this->meta_prefix.'voucher_approval_state' => $voucher_approval_state,
+								switch($data['action'])
+								{
+									case 'insert':
+										/*array (
+											'MetaInformation' => array (
+												'@TotalResources' => 164,
+												'@TotalPages' => 2,
+												'@CurrentPage' => 1,
 											),
-										);
+											'Vouchers' => array (
+												0 => array (
+													'@url' => 'https://api.fortnox.se/3/vouchers/A/1?financialyear=1',
+													'Comments' => NULL,
+													'Description' => 'Inbetalning medlemsavgift Swish / [Name] [Name]',
+													'ReferenceNumber' => '',
+													'ReferenceType' => '',
+													'TransactionDate' => 'YYYY-MM-DD',
+													'VoucherNumber' => 1,
+													'VoucherSeries' => 'A',
+													'Year' => 1,
+													'ApprovalState' => 0,
+												)
+											)
+										)*/
 
-										$result = $obj_base->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'voucher_id', $this->post_type_vouchers, $voucher_id));
-										$voucher_amount = count($result);
-
-										if($voucher_amount > 0)
+										foreach($arr_json['Vouchers'] as $arr_voucher)
 										{
-											$i = 0;
+											$voucher_id = $arr_voucher['Year'].":".$arr_voucher['VoucherSeries'].":".$arr_voucher['VoucherNumber'];
+											$voucher_name = $arr_voucher['Description'];
+											$voucher_excerpt = "";
+											$voucher_content = $arr_voucher['Comments'];
+											$voucher_reference_no = $arr_voucher['ReferenceNumber'];
+											$voucher_reference_type = $arr_voucher['ReferenceType'];
+											$voucher_number = $arr_voucher['VoucherNumber'];
+											$voucher_series = $arr_voucher['VoucherSeries'];
+											$voucher_year = $arr_voucher['Year'];
+											$voucher_approval_state = $arr_voucher['ApprovalState'];
+											$voucher_amount = "";
+											$voucher_created = date("Y-m-d H:i:s", strtotime($arr_voucher['TransactionDate']." 00:00:00"));
 
-											foreach($result as $r)
+											//$arr_voucher_tags = $arr_voucher['tags'];
+
+											$post_data = array(
+												'post_type' => $this->post_type_vouchers,
+												'post_status' => 'publish',
+												'post_title' => $voucher_name,
+												//'post_excerpt' => $voucher_excerpt,
+												//'post_content' => $voucher_content,
+												'meta_input' => array(
+													$this->meta_prefix.'voucher_id' => $voucher_id,
+													//$this->meta_prefix.'voucher_account' => $voucher_account,
+													//$this->meta_prefix.'voucher_amount' => $voucher_amount,
+													$this->meta_prefix.'voucher_reference_no' => $voucher_reference_no,
+													$this->meta_prefix.'voucher_reference_type' => $voucher_reference_type,
+													$this->meta_prefix.'voucher_number' => $voucher_number,
+													$this->meta_prefix.'voucher_series' => $voucher_series,
+													$this->meta_prefix.'voucher_year' => $voucher_year,
+													$this->meta_prefix.'voucher_approval_state' => $voucher_approval_state,
+												),
+											);
+
+											$result = $obj_base->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'voucher_id', $this->post_type_vouchers, $voucher_id));
+											$voucher_amount = count($result);
+
+											if($voucher_amount > 0)
 											{
-												$post_voucher_id = $r->ID;
+												$i = 0;
 
-												if($i == 0)
+												foreach($result as $r)
 												{
-													$post_date = get_post_field('post_date', $post_voucher_id);
+													$post_voucher_id = $r->ID;
 
-													if($voucher_created != $post_date)
+													if($i == 0)
 													{
-														//do_log(__FUNCTION__." - Created: ".$post_date." -> ".$voucher_created);
+														$post_date = get_post_field('post_date', $post_voucher_id);
 
-														$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $voucher_created, $post_voucher_id));
+														if($voucher_created != $post_date)
+														{
+															//do_log(__FUNCTION__." - Created: ".$post_date." -> ".$voucher_created);
+
+															$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $voucher_created, $post_voucher_id));
+														}
+
+														if(1 == 2)
+														{
+															$post_data = $this->get_voucher_info($arr_voucher, $post_data);
+
+															$post_data['ID'] = $post_voucher_id;
+															$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
+
+															wp_update_post($post_data);
+														}
 													}
 
-													if(1 == 2)
+													else
 													{
-														$post_data = $this->get_voucher_info($arr_voucher, $post_data);
-
-														$post_data['ID'] = $post_voucher_id;
-														$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
-
-														wp_update_post($post_data);
+														wp_trash_post($post_voucher_id);
 													}
-												}
 
-												else
-												{
-													wp_trash_post($post_voucher_id);
+													$i++;
 												}
-
-												$i++;
 											}
+
+											else
+											{
+												$post_data = $this->get_voucher_info($arr_voucher, $post_data);
+
+												$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
+
+												$post_voucher_id = wp_insert_post($post_data);
+
+												$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $voucher_created, $post_voucher_id));
+											}
+
+											/*if($post_voucher_id > 0)
+											{
+												wp_set_post_terms($post_voucher_id, $arr_voucher_tags, $this->taxonomy_tags, false);
+											}*/
 										}
+									break;
 
-										else
+									case 'print':
+										$result['success'] = true;
+										$result['html'] .= "HTTP Status: ".$headers['http_code']." -> ".var_export($arr_json, true);
+									break;
+								}
+							break;
+
+							default:
+								$arr_json = json_decode($content, true);
+
+								// {"message":"unauthorized"}
+
+								if(isset($arr_json['message']) && $arr_json['message'] == "unauthorized")
+								{
+									delete_option('setting_fortnox_access_token');
+								}
+
+								$log_message = __FUNCTION__.": Did you use the right endpoint and Auth Token? (".$url." + ".var_export($arr_headers, true)." => ".$headers['http_code']." + ".$content.")";
+
+								switch($data['action'])
+								{
+									case 'insert':
+										do_log($log_message);
+									break;
+
+									case 'print':
+										$result['html'] .= $log_message;
+
+										if($content === false)
 										{
-											$post_data = $this->get_voucher_info($arr_voucher, $post_data);
-
-											$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
-
-											$post_voucher_id = wp_insert_post($post_data);
-
-											$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $voucher_created, $post_voucher_id));
+											$result['html'] .= "cURL error: ".curl_error($ch);
 										}
-
-										/*if($post_voucher_id > 0)
-										{
-											wp_set_post_terms($post_voucher_id, $arr_voucher_tags, $this->taxonomy_tags, false);
-										}*/
-									}
-								break;
-
-								case 'print':
-									$result['success'] = true;
-									$result['html'] .= "HTTP Status: ".$headers['http_code']." -> ".var_export($arr_json, true);
-								break;
-							}
-						break;
-
-						default:
-							$log_message = __FUNCTION__.": Did you use the right endpoint and Auth Token? (".$url." + ".var_export($arr_headers, true)." => ".$headers['http_code']." + ".$content.")";
-
-							switch($data['action'])
-							{
-								case 'insert':
-									do_log($log_message);
-								break;
-
-								case 'print':
-									$result['html'] .= $log_message;
-
-									if($content === false)
-									{
-										$result['html'] .= "cURL error: ".curl_error($ch);
-									}
-								break;
-							}
-						break;
+									break;
+								}
+							break;
+						}
 					}
 				break;
 
@@ -809,14 +821,21 @@ class mf_fortnox
 		$arr_settings = array();
 		$arr_settings['setting_fortnox_client_id'] = __("Client ID", 'lang_fortnox');
 		$arr_settings['setting_fortnox_client_secret'] = __("Client Secret", 'lang_fortnox');
-		$arr_settings['setting_fortnox_scope'] = __("Scope", 'lang_fortnox');
 
-		//$arr_settings['setting_fortnox_authorization_code'] = __("Authorization Code", 'lang_fortnox');
-		//$arr_settings['setting_fortnox_access_token'] = __("Access Token", 'lang_fortnox');
-		//$arr_settings['setting_fortnox_refresh_token'] = __("Refresh Token", 'lang_fortnox');
+		if(get_option('setting_fortnox_client_id') != '' && get_option('setting_fortnox_client_secret') != '')
+		{
+			$arr_settings['setting_fortnox_scope'] = __("Scope", 'lang_fortnox');
 
-		$arr_settings['setting_fortnox_endpoint'] = __("Endpoint", 'lang_fortnox');
-		$arr_settings['setting_fortnox_debug'] = __("Debug", 'lang_fortnox');
+			//$arr_settings['setting_fortnox_authorization_code'] = __("Authorization Code", 'lang_fortnox');
+			//$arr_settings['setting_fortnox_access_token'] = __("Access Token", 'lang_fortnox');
+			//$arr_settings['setting_fortnox_refresh_token'] = __("Refresh Token", 'lang_fortnox');
+
+			if(get_option('setting_fortnox_authorization_code') != '' || get_option('setting_fortnox_refresh_token') != '' || get_option('setting_fortnox_access_token') != '')
+			{
+				$arr_settings['setting_fortnox_endpoint'] = __("Endpoint", 'lang_fortnox');
+				$arr_settings['setting_fortnox_debug'] = __("Debug", 'lang_fortnox');
+			}
+		}
 
 		show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
 	}
@@ -850,6 +869,27 @@ class mf_fortnox
 		$option = get_option($setting_key);
 
 		echo show_textfield(array('name' => $setting_key, 'value' => $option));
+
+		if($option == '')
+		{
+			echo "<h3>".__("Step 1: Get access to the account", 'lang_fortnox')."</h3>
+			<ol>
+				<li>".sprintf(__("Send your social security number to the client so that you can log in with %s.", 'lang_fortnox'), "BankID")."</li>
+				<!--<li>".__("Fill in your name, email address, and create a password.", 'lang_fortnox')."</li>
+				<li>".__("Confirm your email address by clicking on the link sent to your inbox.", 'lang_fortnox')."</li>-->
+			</ol>
+			<h3>".__("Step 2: Log in to your Account", 'lang_fortnox')."</h3>
+			<ol>
+				<li>".sprintf(__("Go to %sFortnox's website%s.", 'lang_fortnox'), "<a href='//apps2.fortnox.se/app/'>", "</a>")."</li>
+			</ol>
+			<!--<h3>".__("Step 3: Retrieve API Keys", 'lang_fortnox')."</h3>
+			<ol>
+				<li>".__("Navigate to 'Developers' in the sidebar.", 'lang_fortnox')."</li>
+				<li>".__("Click on 'API keys' under the 'Developers' tab.", 'lang_fortnox')."</li>
+				<li>".__("You will see both the Publishable key and the Secret key there.", 'lang_fortnox')."</li>
+				<li>".__("Click the eye icon next to the key name to reveal the Secret key if it is hidden.", 'lang_fortnox')."</li>
+			</ol>-->";
+		}
 	}
 
 	function setting_fortnox_client_secret_callback()
