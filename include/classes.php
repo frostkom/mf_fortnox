@@ -874,21 +874,17 @@ class mf_fortnox
 		{
 			echo "<h3>".__("Step 1: Get access to the account", 'lang_fortnox')."</h3>
 			<ol>
-				<li>".sprintf(__("Send your social security number to the client so that you can log in with %s.", 'lang_fortnox'), "BankID")."</li>
+				<li>".sprintf(__("Send your social security number and e-mail to the client for them to notice %s, so that you can log in with %s.", 'lang_fortnox'), "Fortnox", "BankID")."</li>
 				<!--<li>".__("Fill in your name, email address, and create a password.", 'lang_fortnox')."</li>
 				<li>".__("Confirm your email address by clicking on the link sent to your inbox.", 'lang_fortnox')."</li>-->
 			</ol>
 			<h3>".__("Step 2: Log in to your Account", 'lang_fortnox')."</h3>
 			<ol>
 				<li>".sprintf(__("Go to %sFortnox's website%s.", 'lang_fortnox'), "<a href='//apps2.fortnox.se/app/'>", "</a>")."</li>
-			</ol>
-			<!--<h3>".__("Step 3: Retrieve API Keys", 'lang_fortnox')."</h3>
-			<ol>
-				<li>".__("Navigate to 'Developers' in the sidebar.", 'lang_fortnox')."</li>
-				<li>".__("Click on 'API keys' under the 'Developers' tab.", 'lang_fortnox')."</li>
-				<li>".__("You will see both the Publishable key and the Secret key there.", 'lang_fortnox')."</li>
-				<li>".__("Click the eye icon next to the key name to reveal the Secret key if it is hidden.", 'lang_fortnox')."</li>
-			</ol>-->";
+				<li>".__("Navigate to Developer Portal in the sidebar.", 'lang_fortnox')."</li>
+				<li>".__("Press on Create Integration and give it a name.", 'lang_fortnox')."</li>
+				<li>".__("Copy Client ID and Secret and enter into theses fields.", 'lang_fortnox')."</li>
+			</ol>";
 		}
 	}
 
@@ -939,63 +935,77 @@ class mf_fortnox
 
 		echo show_select(array('data' => $arr_data, 'name' => $setting_key."[]", 'value' => $option));
 
-		$setting_fortnox_authorization_code = get_option('setting_fortnox_authorization_code');
+		if($option == '' || count($option) == 0)
+		{
+			echo "<h3>".__("Step 3: Set additional parameters", 'lang_fortnox')."</h3>
+			<ol>
+				<li>".sprintf(__("Enter %s into the Redirect URI field.", 'lang_fortnox'), "<code>".get_site_url()."/wp-content/plugins/mf_fortnox/include/api/callback.php</code>")."</li>
+				<li>".__("Check all the rights that you need access to.", 'lang_fortnox')."</li>
+				<li>".__("Press Save.", 'lang_fortnox')."</li>
+				<li>".__("Choose the Scope you want above and save the settings on this page.", 'lang_fortnox')."</li>
+			</ol>";
+		}
 
-		echo "<p>"
-			.__("Authorization Code", 'lang_fortnox').": ";
+		else
+		{
+			$setting_fortnox_authorization_code = get_option('setting_fortnox_authorization_code');
 
-			if($setting_fortnox_authorization_code != '')
-			{
-				echo shorten_text(array('string' => $setting_fortnox_authorization_code, 'limit' => 10));
-			}
+			echo "<p>"
+				.__("Authorization Code", 'lang_fortnox').": ";
 
-			else
-			{
-				$setting_fortnox_scope = get_option('setting_fortnox_scope');
-
-				if(is_array($setting_fortnox_scope) && count($setting_fortnox_scope) > 0)
+				if($setting_fortnox_authorization_code != '')
 				{
-					$scope = implode("%20", $setting_fortnox_scope);
+					echo shorten_text(array('string' => $setting_fortnox_authorization_code, 'limit' => 10));
 				}
 
 				else
 				{
-					$scope = "companyinformation";
+					$setting_fortnox_scope = get_option('setting_fortnox_scope');
+
+					if(is_array($setting_fortnox_scope) && count($setting_fortnox_scope) > 0)
+					{
+						$scope = implode("%20", $setting_fortnox_scope);
+					}
+
+					else
+					{
+						$scope = "companyinformation";
+					}
+
+					$state_check = "mf_fortnox";
+
+					echo "<a href='https://api.fortnox.se/oauth-v1/auth?response_type=code&client_id=".get_option('setting_fortnox_client_id')."&redirect_uri=".get_site_url().$this->redirect_uri."&scope=".$scope."&state=".$state_check."&access_type=offline&response_type=code&account_type=service'>".__("Get your code here", 'lang_fortnox')."</a>";
 				}
 
-				$state_check = "mf_fortnox";
+			echo "</p>";
 
-				echo "<a href='https://api.fortnox.se/oauth-v1/auth?response_type=code&client_id=".get_option('setting_fortnox_client_id')."&redirect_uri=".get_site_url().$this->redirect_uri."&scope=".$scope."&state=".$state_check."&access_type=offline&response_type=code&account_type=service'>".__("Get your code here", 'lang_fortnox')."</a>";
+			$option_fortnox_database_number = get_option('option_fortnox_database_number');
+
+			if($option_fortnox_database_number != '')
+			{
+				echo "<p>".__("Database Number", 'lang_fortnox').": ".$option_fortnox_database_number."</p>";
 			}
 
-		echo "</p>";
+			$option_fortnox_scope = get_option('option_fortnox_scope');
 
-		$option_fortnox_database_number = get_option('option_fortnox_database_number');
+			if($option_fortnox_scope != '')
+			{
+				echo "<p>".__("Scope", 'lang_fortnox').": ".$option_fortnox_scope."</p>";
+			}
 
-		if($option_fortnox_database_number != '')
-		{
-			echo "<p>".__("Database Number", 'lang_fortnox').": ".$option_fortnox_database_number."</p>";
-		}
+			$setting_fortnox_access_token = get_option('setting_fortnox_access_token');
 
-		$option_fortnox_scope = get_option('option_fortnox_scope');
+			if($setting_fortnox_access_token != '')
+			{
+				echo "<p>".__("Access Token", 'lang_fortnox').": ".shorten_text(array('string' => $setting_fortnox_access_token, 'limit' => 10))."</p>";
+			}
 
-		if($option_fortnox_scope != '')
-		{
-			echo "<p>".__("Scope", 'lang_fortnox').": ".$option_fortnox_scope."</p>";
-		}
+			$setting_fortnox_refresh_token = get_option('setting_fortnox_refresh_token');
 
-		$setting_fortnox_access_token = get_option('setting_fortnox_access_token');
-
-		if($setting_fortnox_access_token != '')
-		{
-			echo "<p>".__("Access Token", 'lang_fortnox').": ".shorten_text(array('string' => $setting_fortnox_access_token, 'limit' => 10))."</p>";
-		}
-
-		$setting_fortnox_refresh_token = get_option('setting_fortnox_refresh_token');
-
-		if($setting_fortnox_refresh_token != '')
-		{
-			echo "<p>".__("Refresh Token", 'lang_fortnox').": ".shorten_text(array('string' => $setting_fortnox_refresh_token, 'limit' => 10))."</p>";
+			if($setting_fortnox_refresh_token != '')
+			{
+				echo "<p>".__("Refresh Token", 'lang_fortnox').": ".shorten_text(array('string' => $setting_fortnox_refresh_token, 'limit' => 10))."</p>";
+			}
 		}
 	}
 

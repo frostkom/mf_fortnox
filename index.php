@@ -3,14 +3,14 @@
 Plugin Name: MF Fortnox
 Plugin URI: https://github.com/frostkom/mf_fortnox
 Description: Adds support for communicating with the Fortnox API
-Version: 1.0.5
+Version: 1.0.6
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://martinfors.se
 Text Domain: lang_fortnox
 Domain Path: /lang
 
-Documentation: https://api.fortnox.se/apidocs
+Documentation: https://support.fortnox.se/kom-igang/integrationer/kom-igang-med-utvecklarportalen alt. https://api.fortnox.se/apidocs
 */
 
 if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') && is_plugin_active("mf_base/index.php"))
