@@ -3,14 +3,322 @@
 class mf_fortnox
 {
 	var $post_type = __CLASS__;
+	var $post_type_customer;
+	var $post_type_invoices;
+	var $post_type_payments;
 	var $post_type_vouchers;
 	var $meta_prefix;
 	var $redirect_uri = "/wp-content/plugins/mf_fortnox/include/api/callback.php";
 
 	function __construct()
 	{
+		$this->post_type_customer = $this->post_type.'_customer';
+		$this->post_type_invoices = $this->post_type.'_invoices';
+		$this->post_type_payments = $this->post_type.'_payments';
 		$this->post_type_vouchers = $this->post_type.'_vouchers';
 		$this->meta_prefix = $this->post_type.'_';
+	}
+
+	function insert_or_update_customer($data)
+	{
+		global $wpdb, $obj_base;
+
+		$customer_id = $data['id'];
+		$customer_name = $data['name'];
+
+		$post_data = array(
+			'post_type' => $this->post_type_customer,
+			'post_status' => 'publish',
+			'post_title' => $customer_name,
+			'meta_input' => array(
+				$this->meta_prefix.'customer_id' => $customer_id,
+			),
+		);
+
+		$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'customer_id', $this->post_type_customer, $customer_id));
+		$customer_amount = count($result);
+
+		if($customer_amount > 0)
+		{
+			$i = 0;
+
+			foreach($result as $r)
+			{
+				$post_customer_id = $r->ID;
+				$post_customer_modified = $r->post_modified;
+
+				if($i == 0)
+				{
+					/*$post_date = get_post_field('post_date', $post_customer_id);
+
+					if($customer_created != $post_date)
+					{
+						//do_log(__FUNCTION__." - Created: ".$post_date." -> ".$customer_created, 'publish', false);
+
+						$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $customer_created, $post_customer_id));
+					}*/
+
+					if($post_customer_modified < date("Y-m-d H:i:s", strtotime(current_time('mysql')." -4 hour")))
+					{
+						$post_data['ID'] = $post_customer_id;
+						$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
+
+						wp_update_post($post_data);
+					}
+				}
+
+				else
+				{
+					wp_trash_post($post_customer_id);
+				}
+
+				$i++;
+			}
+		}
+
+		else
+		{
+			$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
+
+			$post_customer_id = wp_insert_post($post_data);
+
+			//$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $customer_created, $post_customer_id));
+		}
+
+		return $post_customer_id;
+	}
+
+	function get_invoice_info($arr_invoice, $post_data)
+	{
+		//$invoice_ = "";
+
+		if(isset($arr_invoice['@url']) && $arr_invoice['@url'] != '')
+		{
+			$arr_invoice_info = $this->fetch_from_api(['endpoint' => 'invoice', 'url' => $arr_invoice['@url'], 'action' => 'insert']);
+
+			//do_log(__FUNCTION__.": ".var_export($arr_invoice_info, true), 'publish', false);
+
+			/*array (
+				'success' => true,
+				'html' => '',
+				'array' => array (
+					'Invoice' => array (
+						'@url' => 'https://api.fortnox.se/3/invoices/98',
+						'@urlTaxReductionList' => 'https://api.fortnox.se/3/taxreductions?filter=invoices&referencenumber=98',
+						'AccountingMethod' => 'ACCRUAL',
+						'Address1' => 'c/o ...',
+						'Address2' => '',
+						'AdministrationFee' => 0,
+						'AdministrationFeeVAT' => 0,
+							'Balance' => 0,
+						'BasisTaxReduction' => 0,
+							'Booked' => true,
+							'Cancelled' => false,
+						'City' => '[name]',
+						'Comments' => '',
+						'ContractReference' => '0',
+						'ContributionPercent' => 100,
+						'ContributionValue' => [number],
+							'CostCenter' => '',
+						'Country' => '[text]',
+						'Credit' => 'false',
+						'CreditInvoiceReference' => '0',
+							'Currency' => 'SEK',
+							'CurrencyRate' => 1,
+							'CurrencyUnit' => 1,
+							'CustomerName' => '[name]',
+							'CustomerNumber' => '1',
+						'DeliveryAddress1' => '',
+						'DeliveryAddress2' => '',
+						'DeliveryCity' => '',
+						'DeliveryCountry' => '',
+						'DeliveryDate' => NULL,
+						'DeliveryName' => '',
+						'DeliveryZipCode' => '',
+							'DocumentNumber' => '98',
+							'DueDate' => 'YY-MM-DD',
+						'EDIInformation' => array (
+							'EDIGlobalLocationNumber' => '',
+							'EDIGlobalLocationNumberDelivery' => '',
+							'EDIInvoiceExtra1' => '',
+							'EDIInvoiceExtra2' => '',
+							'EDIOurElectronicReference' => '',
+							'EDIYourElectronicReference' => '123-45678901',
+							'EDIStatus' => '8',
+						),
+						'EUQuarterlyReport' => false,
+						'EmailInformation' => array (
+							'EmailAddressFrom' => NULL,
+							'EmailAddressTo' => '',
+							'EmailAddressCC' => '',
+							'EmailAddressBCC' => '',
+							'EmailSubject' => 'Faktura {no} bifogas',
+							'EmailBody' => ' ',
+						),
+							'ExternalInvoiceReference1' => '',
+							'ExternalInvoiceReference2' => '',
+							'FinalPayDate' => 'YY-MM-DD',
+						'Freight' => 0,
+						'FreightVAT' => 0,
+						'Gross' => [number],
+						'HouseWork' => false,
+							'InvoiceDate' => 'YY-MM-DD',
+						'InvoicePeriodEnd' => '',
+						'InvoicePeriodStart' => '',
+						'InvoiceReference' => '0',
+						'InvoiceRows' => array (
+							0 => array (
+								'AccountNumber' => 3001,
+								'ArticleNumber' => '5',
+								'ContributionPercent' => '100',
+								'ContributionValue' => '[number]',
+								'Cost' => NULL,
+								'CostCenter' => NULL,
+								'DeliveredQuantity' => '1',
+								'Description' => '[text]',
+								'Discount' => 0,
+								'DiscountType' => 'PERCENT',
+								'HouseWork' => false,
+								'HouseWorkHoursToReport' => NULL,
+								'HouseWorkType' => NULL,
+								'Price' => [number],
+								'PriceExcludingVAT' => [number],
+								'Project' => '',
+								'RowId' => 335,
+								'StockPointCode' => NULL,
+								'Total' => [number],
+								'TotalExcludingVAT' => [number],
+								'Unit' => '',
+								'VAT' => 25,
+								'VATCode' => NULL,
+							),
+						),
+							'InvoiceType' => 'INVOICE',
+						'Labels' => array ( ),
+						'Language' => 'SV',
+						'LastRemindDate' => NULL,
+						'Net' => [number],
+						'NotCompleted' => false,
+							'NoxFinans' => false,
+							'OCR' => '9845',
+						'OfferReference' => '0',
+						'OrderReference' => '0',
+						'OrganisationNumber' => '[number]',
+						'OurReference' => '[full name]',
+						'OutboundDate' => 'YY-MM-DD',
+						'PaymentWay' => '',
+						'Phone1' => '040-0123456',
+						'Phone2' => '',
+						'PriceList' => 'A',
+						'PrintTemplate' => 'st',
+							'Project' => '',
+						'Remarks' => '',
+						'Reminders' => 0,
+						'RoundOff' => 0,
+							'Sent' => true,
+						'TaxReduction' => NULL,
+						'TaxReductionType' => 'none',
+						'TermsOfDelivery' => '',
+							'TermsOfPayment' => '30',
+						'TimeBasisReference' => 0,
+							'Total' => [number],
+						'TotalToPay' => [number],
+						'TotalVAT' => [number],
+						'VATIncluded' => false,
+							'VoucherNumber' => 56,
+							'VoucherSeries' => 'B',
+							'VoucherYear' => 2,
+						'WarehouseReady' => true,
+							'WayOfDelivery' => '',
+						'YourOrderNumber' => '',
+						'YourReference' => '123-45678901',
+						'ZipCode' => '[number]',
+					),
+				),
+			)*/
+
+			/*if(isset($arr_invoice_info['array']))
+			{
+				$invoice_account = $arr_invoice_info['array']['invoice']['invoiceRows'][0]['Account'];
+				$invoice_amount = $arr_invoice_info['array']['invoice']['invoiceRows'][0]['Debit'];
+				$invoice_excerpt = $arr_invoice_info['array']['invoice']['invoiceRows'][0]['Description'];
+				$invoice_content = $arr_invoice_info['array']['invoice']['invoiceRows'][0]['TransactionInformation'];
+			}*/
+		}
+
+		/*$post_data['post_excerpt'] = $invoice_excerpt;
+		$post_data['post_content'] = $invoice_content;
+		$post_data['meta_input'][$this->meta_prefix.'invoice_account'] = $invoice_account;
+		$post_data['meta_input'][$this->meta_prefix.'invoice_amount'] = $invoice_amount;*/
+
+		return $post_data;
+	}
+
+	function get_payment_info($arr_payment, $post_data)
+	{
+		$post_customer_id = $payment_due_date = $payment_mode_of_payment = $payment_mode_of_payment_account = $payment_voucher_number = $payment_voucher_series = $payment_voucher_year = "";
+
+		if(isset($arr_payment['@url']) && $arr_payment['@url'] != '')
+		{
+			$arr_payment_info = $this->fetch_from_api(['endpoint' => 'payment', 'url' => $arr_payment['@url'], 'action' => 'insert']);
+
+			//do_log(__FUNCTION__.": ".var_export($arr_payment_info, true), 'publish', false);
+
+			/*array (
+				'success' => true,
+				'html' => '',
+				'array' => array (
+					'InvoicePayment' => array (
+						'@url' => 'https://api.fortnox.se/3/invoicepayments/101',
+							'Amount' => [number],
+							'AmountCurrency' => [number],
+							'Booked' => true,
+							'Currency' => 'SEK',
+							'CurrencyRate' => 1,
+							'CurrencyUnit' => 1,
+						'ExternalInvoiceReference1' => '',
+						'ExternalInvoiceReference2' => '',
+						'InvoiceCustomerName' => '[name]',
+						'InvoiceCustomerNumber' => '1',
+							'InvoiceNumber' => 103,
+						'InvoiceDueDate' => 'YY-MM-DD',
+						'InvoiceOCR' => '10355',
+							'InvoiceTotal' => '[number]',
+						'ModeOfPayment' => 'BG',
+						'ModeOfPaymentAccount' => 1930,
+							'Number' => '101',
+							'PaymentDate' => 'YY-MM-DD',
+						'VoucherNumber' => 73,
+						'VoucherSeries' => 'C',
+						'VoucherYear' => 2,
+							'Source' => 'file',
+							'WriteOffs' => array ( ),
+					),
+				),
+			)*/
+
+			if(isset($arr_payment_info['array']))
+			{
+				$post_customer_id = $this->insert_or_update_customer(array('id' => $arr_payment_info['array']['payment']['InvoiceCustomerNumber'], 'name' => $arr_payment_info['array']['payment']['InvoiceCustomerName']));
+
+				$payment_due_date = $arr_payment_info['array']['InvoicePayment']['InvoiceDueDate'];
+				$payment_mode_of_payment = $arr_payment_info['array']['payment']['ModeOfPayment'];
+				$payment_mode_of_payment_account = $arr_payment_info['array']['payment']['ModeOfPaymentAccount'];
+				$payment_voucher_number = $arr_payment_info['array']['payment']['VoucherNumber'];
+				$payment_voucher_series = $arr_payment_info['array']['payment']['VoucherSeries'];
+				$payment_voucher_year = $arr_payment_info['array']['payment']['VoucherYear'];
+			}
+		}
+
+		$post_data['meta_input'][$this->meta_prefix.'post_customer_id'] = $post_customer_id;
+		$post_data['meta_input'][$this->meta_prefix.'payment_due_date'] = $payment_due_date;
+		$post_data['meta_input'][$this->meta_prefix.'payment_mode_of_payment'] = $payment_mode_of_payment;
+		$post_data['meta_input'][$this->meta_prefix.'payment_mode_of_payment_account'] = $payment_mode_of_payment_account;
+		$post_data['meta_input'][$this->meta_prefix.'payment_voucher_number'] = $payment_voucher_number;
+		$post_data['meta_input'][$this->meta_prefix.'payment_voucher_series'] = $payment_voucher_series;
+		$post_data['meta_input'][$this->meta_prefix.'payment_voucher_year'] = $payment_voucher_year;
+
+		return $post_data;
 	}
 
 	function get_voucher_info($arr_voucher, $post_data)
@@ -21,7 +329,7 @@ class mf_fortnox
 		{
 			$arr_voucher_info = $this->fetch_from_api(['endpoint' => 'voucher', 'url' => $arr_voucher['@url'], 'action' => 'insert']);
 
-			//do_log(__FUNCTION__.": ".var_export($arr_voucher_info, true));
+			//do_log(__FUNCTION__.": ".var_export($arr_voucher_info, true), 'publish', false);
 
 			/*'Voucher' => array (
 				'@url' => 'https://api.fortnox.se/3/vouchers/A/12?financialyear=1',
@@ -40,17 +348,6 @@ class mf_fortnox
 						'Credit' => 0,
 						'Description' => 'Swish Nordea',
 						'Debit' => 500,
-						'Project' => '',
-						'Removed' => false,
-						'TransactionInformation' => '[info] 1802936198795036 / Swishnummer: 1232335578',
-						'Quantity' => 0,
-					),
-					1 => array (
-						'Account' => 3000,
-						'CostCenter' => '',
-						'Credit' => 500,
-						'Description' => 'Försäljning inom Sverige',
-						'Debit' => 0,
 						'Project' => '',
 						'Removed' => false,
 						'TransactionInformation' => '[info] 1802936198795036 / Swishnummer: 1232335578',
@@ -109,6 +406,7 @@ class mf_fortnox
 			{
 				case 'generate_access_token':
 				case 'generate_access_token_from_refresh':
+				case 'generate_access_token_from_tenant_id':
 					$url = 'https://api.fortnox.se/oauth-v1/token';
 
 					$arr_headers = [
@@ -136,6 +434,17 @@ class mf_fortnox
 								'refresh_token' => $setting_fortnox_refresh_token,
 							]);
 						break;
+
+						case 'generate_access_token_from_tenant_id':
+							$option_fortnox_database_number = get_option('option_fortnox_database_number');
+
+							$arr_headers[] = 'TenantId: '.$option_fortnox_database_number;
+
+							$post_data = http_build_query([
+								'grant_type' => 'client_credentials',
+								//'scope' => 'companyinformation',
+							]);
+						break;
 					}
 
 					list($content, $headers) = get_url_content(array(
@@ -153,7 +462,7 @@ class mf_fortnox
 
 							/*{
 								"access_token": "xyz...",
-								"refresh_token": "a7302e6b-b1cb-4508-b884-cf9abd9a51de",
+								"refresh_token": "a7302e6b-b1cb-4508-b884-cf...",
 								"scope": "companyinformation",
 								"expires_in": 3600,
 								"token_type": "bearer"
@@ -208,12 +517,12 @@ class mf_fortnox
 								}
 							}
 
-							$log_message = __FUNCTION__.": Did you use the right endpoint and Auth Token? (".$url." => ".$headers['http_code']." => ".$content.")";
+							$log_message = __FUNCTION__.": Did you use the right endpoint and Auth Token? (".$url." + ".var_export($arr_headers, true)." + ".var_export($post_data, true)." => ".$headers['http_code']." => ".$content.")";
 
 							switch($data['action'])
 							{
 								case 'insert':
-									do_log($log_message);
+									do_log($log_message, 'publish', false);
 								break;
 
 								case 'print':
@@ -251,11 +560,25 @@ class mf_fortnox
 						case 201:
 							$arr_json = json_decode($content, true);
 
-							/*array ( 'CompanyInformation' => array ( 'Address' => '[text]', 'City' => '[city]', 'CountryCode' => 'SE', 'DatabaseNumber' => [number], 'CompanyName' => '[text]', 'OrganizationNumber' => 'XXXXXX-XXXX', 'VisitAddress' => NULL, 'VisitCity' => NULL, 'VisitCountryCode' => NULL, 'VisitZipCode' => NULL, 'ZipCode' => '[number]', ), )*/
+							/*array (
+								'CompanyInformation' => array (
+									'Address' => '[text]',
+									'City' => '[city]',
+									'CountryCode' => 'SE',
+									'DatabaseNumber' => [number],
+									'CompanyName' => '[text]',
+									'OrganizationNumber' => 'XXXXXX-XXXX',
+									'VisitAddress' => NULL,
+									'VisitCity' => NULL,
+									'VisitCountryCode' => NULL,
+									'VisitZipCode' => NULL,
+									'ZipCode' => '[number]',
+								),
+							)*/
 
 							if(isset($arr_json['CompanyInformation']['DatabaseNumber']) && $arr_json['CompanyInformation']['DatabaseNumber'] != '')
 							{
-								update_option('option_fortnox_database_number', $arr_json['CompanyInformation']['DatabaseNumber'], false); // Then -> https://www.fortnox.se/developer/authorization/get-access-token-using-client-credentials
+								update_option('option_fortnox_database_number', $arr_json['CompanyInformation']['DatabaseNumber'], false);
 							}
 
 							switch($data['action'])
@@ -277,7 +600,7 @@ class mf_fortnox
 							switch($data['action'])
 							{
 								case 'insert':
-									do_log($log_message);
+									do_log($log_message, 'publish', false);
 								break;
 
 								case 'print':
@@ -315,49 +638,152 @@ class mf_fortnox
 						case 201:
 							$arr_json = json_decode($content, true);
 
-							/*array (
-								'MetaInformation' => array (
-									'@TotalResources' => 15,
-									'@TotalPages' => 1,
-									'@CurrentPage' => 1,
-								),
-								'Invoices' => array (
-									0 => array (
-										'@url' => 'https://api.fortnox.se/3/invoices/1',
-										'Balance' => 0,
-										'Booked' => true,
-										'Cancelled' => false,
-										'CostCenter' => '',
-										'Currency' => 'SEK',
-										'CurrencyRate' => '1',
-										'CurrencyUnit' => 1,
-										'CustomerName' => '[text]',
-										'CustomerNumber' => '1',
-										'DocumentNumber' => '1',
-										'DueDate' => 'YYYY-MM-DD',
-										'ExternalInvoiceReference1' => '',
-										'ExternalInvoiceReference2' => '',
-										'InvoiceDate' => 'YYYY-MM-DD',
-										'InvoiceType' => 'INVOICE',
-										'NoxFinans' => false,
-										'OCR' => '133',
-										'VoucherNumber' => 1,
-										'VoucherSeries' => 'B',
-										'VoucherYear' => 1,
-										'WayOfDelivery' => '',
-										'TermsOfPayment' => '15',
-										'Project' => '',
-										'Sent' => true,
-										'Total' => 20000,
-										'FinalPayDate' => 'YYYY-MM-DD',
-									),
-								),
-							)*/
-
 							switch($data['action'])
 							{
 								case 'insert':
-									// Do what?
+									/*array (
+										'MetaInformation' => array (
+											'@TotalResources' => 15,
+											'@TotalPages' => 1,
+											'@CurrentPage' => 1,
+										),
+										'Invoices' => array (
+											0 => array (
+												'@url' => 'https://api.fortnox.se/3/invoices/1',
+												'Balance' => 0,
+												'Booked' => true,
+												'Cancelled' => false,
+												'CostCenter' => '',
+												'Currency' => 'SEK',
+												'CurrencyRate' => '1',
+												'CurrencyUnit' => 1,
+												'CustomerName' => '[text]',
+												'CustomerNumber' => '1',
+												'DocumentNumber' => '1',
+												'DueDate' => 'YYYY-MM-DD',
+												'ExternalInvoiceReference1' => '',
+												'ExternalInvoiceReference2' => '',
+												'InvoiceDate' => 'YYYY-MM-DD',
+												'InvoiceType' => 'INVOICE',
+												'NoxFinans' => false,
+												'OCR' => '133',
+												'VoucherNumber' => 1,
+												'VoucherSeries' => 'B',
+												'VoucherYear' => 1,
+												'WayOfDelivery' => '',
+												'TermsOfPayment' => '15',
+												'Project' => '',
+												'Sent' => true,
+												'Total' => 20000,
+												'FinalPayDate' => 'YYYY-MM-DD',
+											),
+										),
+									)*/
+
+									foreach($arr_json['Invoices'] as $arr_invoice)
+									{
+										$invoice_id = $arr_invoice['DocumentNumber'];
+										$invoice_name = "";
+										$invoice_balance = $arr_invoice['Balance'];
+										$invoice_booked = $arr_invoice['Booked'];
+										$invoice_cancelled = $arr_invoice['Cancelled'];
+										$invoice_currency = $arr_invoice['Currency'];
+										$invoice_customer_name = $arr_invoice['CustomerName'];
+										$invoice_customer_number = $arr_invoice['CustomerNumber'];
+										$invoice_due_date = date("Y-m-d H:i:s", strtotime($arr_invoice['DueDate']." 00:00:00"));
+										$invoice_created = date("Y-m-d H:i:s", strtotime($arr_invoice['InvoiceDate']." 00:00:00"));
+										$invoice_invoice_type = $arr_invoice['InvoiceType'];
+										$invoice_voucher_number = $arr_invoice['VoucherNumber'];
+										$invoice_voucher_series = $arr_invoice['VoucherSeries'];
+										$invoice_voucher_year = $arr_invoice['VoucherYear'];
+										$invoice_way_of_delivery = $arr_invoice['WayOfDelivery'];
+										$invoice_terms_of_payment = $arr_invoice['TermsOfPayment'];
+										$invoice_project = $arr_invoice['Project'];
+										$invoice_sent = $arr_invoice['Sent'];
+										$invoice_total = $arr_invoice['Total'];
+										$invoice_final_pay_date = date("Y-m-d H:i:s", strtotime($arr_invoice['FinalPayDate']." 00:00:00"));
+
+										$post_customer_id = $this->insert_or_update_customer(array('id' => $invoice_customer_number, 'name' => $invoice_customer_name));
+
+										$post_data = array(
+											'post_type' => $this->post_type_invoices,
+											'post_status' => 'publish',
+											'post_title' => $invoice_name,
+											'meta_input' => array(
+												$this->meta_prefix.'invoice_id' => $invoice_id,
+												$this->meta_prefix.'post_customer_id' => $post_customer_id,
+												$this->meta_prefix.'invoice_balance' => $invoice_balance,
+												$this->meta_prefix.'invoice_booked' => $invoice_booked,
+												$this->meta_prefix.'invoice_cancelled' => $invoice_cancelled,
+												$this->meta_prefix.'invoice_currency' => $invoice_currency,
+												$this->meta_prefix.'invoice_due_date' => $invoice_due_date,
+												$this->meta_prefix.'invoice_invoice_type' => $invoice_invoice_type,
+												$this->meta_prefix.'invoice_voucher_number' => $invoice_voucher_number,
+												$this->meta_prefix.'invoice_voucher_series' => $invoice_voucher_series,
+												$this->meta_prefix.'invoice_voucher_year' => $invoice_voucher_year,
+												$this->meta_prefix.'invoice_way_of_delivery' => $invoice_way_of_delivery,
+												$this->meta_prefix.'invoice_terms_of_payment' => $invoice_terms_of_payment,
+												$this->meta_prefix.'invoice_project' => $invoice_project,
+												$this->meta_prefix.'invoice_sent' => $invoice_sent,
+												$this->meta_prefix.'invoice_total' => $invoice_total,
+												$this->meta_prefix.'invoice_final_pay_date' => $invoice_final_pay_date,
+											),
+										);
+
+										$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'invoice_id', $this->post_type_invoices, $invoice_id));
+										$invoice_amount = count($result);
+
+										if($invoice_amount > 0)
+										{
+											$i = 0;
+
+											foreach($result as $r)
+											{
+												$post_invoice_id = $r->ID;
+												$post_invoice_modified = $r->post_modified;
+
+												if($i == 0)
+												{
+													$post_date = get_post_field('post_date', $post_invoice_id);
+
+													if($invoice_created != $post_date)
+													{
+														//do_log(__FUNCTION__." - Created: ".$post_date." -> ".$invoice_created, 'publish', false);
+
+														$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $invoice_created, $post_invoice_id));
+													}
+
+													if($post_invoice_modified < date("Y-m-d H:i:s", strtotime(current_time('mysql')." -4 hour")))
+													{
+														//$post_data = $this->get_invoice_info($arr_invoice, $post_data);
+
+														$post_data['ID'] = $post_invoice_id;
+														$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
+
+														wp_update_post($post_data);
+													}
+												}
+
+												else
+												{
+													wp_trash_post($post_invoice_id);
+												}
+
+												$i++;
+											}
+										}
+
+										else
+										{
+											//$post_data = $this->get_invoice_info($arr_invoice, $post_data);
+
+											$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
+
+											$post_invoice_id = wp_insert_post($post_data);
+
+											$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $invoice_created, $post_invoice_id));
+										}
+									}
 								break;
 
 								case 'print':
@@ -373,7 +799,7 @@ class mf_fortnox
 							switch($data['action'])
 							{
 								case 'insert':
-									do_log($log_message);
+									do_log($log_message, 'publish', false);
 								break;
 
 								case 'print':
@@ -390,7 +816,7 @@ class mf_fortnox
 				break;
 
 				case 'payments':
-					$url = "https://api.fortnox.se/3/invoicepayments"; // https://api.fortnox.se/apidocs#tag/fortnox_InvoicePayments
+					$url = "https://api.fortnox.se/3/invoicepayments";
 
 					$setting_fortnox_access_token = get_option('setting_fortnox_access_token');
 
@@ -414,7 +840,110 @@ class mf_fortnox
 							switch($data['action'])
 							{
 								case 'insert':
-									do_log("Payments: ".var_export($arr_json, true));
+									//do_log("Payments: ".var_export($arr_json, true), 'publish', false);
+
+									/*array (
+										'MetaInformation' => array (
+											'@TotalResources' => 715,
+											'@TotalPages' => 8,
+											'@CurrentPage' => 1,
+										),
+										'InvoicePayments' => array (
+											0 => array (
+												'@url' => 'https://api.fortnox.se/3/invoicepayments/1',
+												'Amount' => [number],
+												'Booked' => true,
+												'Currency' => 'SEK',
+												'CurrencyRate' => 1,
+												'CurrencyUnit' => 1,
+												'InvoiceNumber' => 1,
+												'Number' => '1',
+												'PaymentDate' => 'YYYY-MM-DD',
+												'Source' => 'manual',
+												'WriteOffExist' => false,
+											),
+										),
+									)*/
+
+									foreach($arr_json['InvoicePayments'] as $arr_payment)
+									{
+										$payment_id = $arr_payment['Number'];
+										$payment_name = "";
+										$payment_amount = $arr_payment['Amount'];
+										$payment_booked = $arr_payment['Booked'];
+										$payment_currency = $arr_payment['Currency'];
+										$payment_source = $arr_payment['Source'];
+										$payment_write_off_exists = $arr_payment['WriteOffExist'];
+										$payment_created = date("Y-m-d H:i:s", strtotime($arr_payment['PaymentDate']." 00:00:00"));
+
+										$post_data = array(
+											'post_type' => $this->post_type_payments,
+											'post_status' => 'publish',
+											'post_title' => $payment_name,
+											'meta_input' => array(
+												$this->meta_prefix.'payment_id' => $payment_id,
+												$this->meta_prefix.'payment_amount' => $payment_amount,
+												$this->meta_prefix.'payment_booked' => $payment_booked,
+												$this->meta_prefix.'payment_currency' => $payment_currency,
+												$this->meta_prefix.'payment_source' => $payment_source,
+												$this->meta_prefix.'payment_write_off_exists' => $payment_write_off_exists,
+											),
+										);
+
+										$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'payment_id', $this->post_type_payments, $payment_id));
+										$payment_amount = count($result);
+
+										if($payment_amount > 0)
+										{
+											$i = 0;
+
+											foreach($result as $r)
+											{
+												$post_payment_id = $r->ID;
+												$post_payment_modified = $r->post_modified;
+
+												if($i == 0)
+												{
+													$post_date = get_post_field('post_date', $post_payment_id);
+
+													if($payment_created != $post_date)
+													{
+														//do_log(__FUNCTION__." - Created: ".$post_date." -> ".$payment_created, 'publish', false);
+
+														$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $payment_created, $post_payment_id));
+													}
+
+													if($post_payment_modified < date("Y-m-d H:i:s", strtotime(current_time('mysql')." -4 hour")))
+													{
+														$post_data = $this->get_payment_info($arr_payment, $post_data);
+
+														$post_data['ID'] = $post_payment_id;
+														$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
+
+														wp_update_post($post_data);
+													}
+												}
+
+												else
+												{
+													wp_trash_post($post_payment_id);
+												}
+
+												$i++;
+											}
+										}
+
+										else
+										{
+											$post_data = $this->get_payment_info($arr_payment, $post_data);
+
+											$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
+
+											$post_payment_id = wp_insert_post($post_data);
+
+											$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $payment_created, $post_payment_id));
+										}
+									}
 								break;
 
 								case 'print':
@@ -430,7 +959,7 @@ class mf_fortnox
 							switch($data['action'])
 							{
 								case 'insert':
-									do_log($log_message);
+									do_log($log_message, 'publish', false);
 								break;
 
 								case 'print':
@@ -532,7 +1061,7 @@ class mf_fortnox
 												),
 											);
 
-											$result = $obj_base->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'voucher_id', $this->post_type_vouchers, $voucher_id));
+											$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'voucher_id', $this->post_type_vouchers, $voucher_id));
 											$voucher_amount = count($result);
 
 											if($voucher_amount > 0)
@@ -542,6 +1071,7 @@ class mf_fortnox
 												foreach($result as $r)
 												{
 													$post_voucher_id = $r->ID;
+													$post_voucher_modified = $r->post_modified;
 
 													if($i == 0)
 													{
@@ -549,12 +1079,12 @@ class mf_fortnox
 
 														if($voucher_created != $post_date)
 														{
-															//do_log(__FUNCTION__." - Created: ".$post_date." -> ".$voucher_created);
+															//do_log(__FUNCTION__." - Created: ".$post_date." -> ".$voucher_created, 'publish', false);
 
 															$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $voucher_created, $post_voucher_id));
 														}
 
-														if(1 == 2)
+														if($post_voucher_modified < date("Y-m-d H:i:s", strtotime(current_time('mysql')." -4 hour")))
 														{
 															$post_data = $this->get_voucher_info($arr_voucher, $post_data);
 
@@ -614,7 +1144,7 @@ class mf_fortnox
 								switch($data['action'])
 								{
 									case 'insert':
-										do_log($log_message);
+										do_log($log_message, 'publish', false);
 									break;
 
 									case 'print':
@@ -631,6 +1161,8 @@ class mf_fortnox
 					}
 				break;
 
+				case 'invoice':
+				case 'payment':
 				case 'voucher':
 					$url = $data['url'];
 
@@ -714,7 +1246,7 @@ class mf_fortnox
 							switch($data['action'])
 							{
 								case 'insert':
-									do_log($log_message);
+									do_log($log_message, 'publish', false);
 								break;
 
 								case 'print':
@@ -757,11 +1289,18 @@ class mf_fortnox
 				$this->fetch_from_api(['endpoint' => 'generate_access_token', 'action' => 'insert']);
 			}
 
+			else if(get_option('option_fortnox_database_number') != '')
+			{
+				$this->fetch_from_api(['endpoint' => 'generate_access_token_from_tenant_id', 'action' => 'insert']);
+			}
+
+			$this->fetch_from_api(['endpoint' => 'invoices', 'action' => 'insert']);
+			$this->fetch_from_api(['endpoint' => 'payments', 'action' => 'insert']);
 			$this->fetch_from_api(['endpoint' => 'vouchers', 'action' => 'insert']);
 
-			mf_uninstall_plugin(array(
+			/*mf_uninstall_plugin(array(
 				'options' => array('setting_fortnox_tenant_id'),
-			));
+			));*/
 		}
 
 		$obj_cron->end();
@@ -771,7 +1310,7 @@ class mf_fortnox
 	{
 		load_plugin_textdomain('lang_fortnox', false, str_replace("/include", "", dirname(plugin_basename(__FILE__)))."/lang/");
 
-		register_post_type($this->post_type, array(
+		register_post_type($this->post_type_customer, array(
 			'labels' => array(
 				'name' => __("Customers", 'lang_fortnox'),
 				'singular_name' => __("Customer", 'lang_fortnox'),
@@ -787,6 +1326,46 @@ class mf_fortnox
 			'show_in_nav_menus' => false,
 			'show_in_rest' => true,
 			'supports' => array('title'),
+			'hierarchical' => true,
+			'has_archive' => false,
+		));
+
+		register_post_type($this->post_type_invoices, array(
+			'labels' => array(
+				'name' => __("Invoices", 'lang_fortnox'),
+				'singular_name' => __("Invoice", 'lang_fortnox'),
+				'menu_name' => __("Invoices", 'lang_fortnox'),
+				'all_items' => __("List", 'lang_fortnox'),
+				'edit_item' => __("Edit", 'lang_fortnox'),
+				'view_item' => __("View", 'lang_fortnox'),
+				'add_new_item' => __("Add New", 'lang_fortnox'),
+			),
+			'public' => false,
+			'show_ui' => true,
+			'show_in_menu' => false,
+			'show_in_nav_menus' => false,
+			'show_in_rest' => true,
+			'supports' => array('title', 'editor'),
+			'hierarchical' => true,
+			'has_archive' => false,
+		));
+
+		register_post_type($this->post_type_payments, array(
+			'labels' => array(
+				'name' => __("Payments", 'lang_fortnox'),
+				'singular_name' => __("Payment", 'lang_fortnox'),
+				'menu_name' => __("Payments", 'lang_fortnox'),
+				'all_items' => __("List", 'lang_fortnox'),
+				'edit_item' => __("Edit", 'lang_fortnox'),
+				'view_item' => __("View", 'lang_fortnox'),
+				'add_new_item' => __("Add New", 'lang_fortnox'),
+			),
+			'public' => false,
+			'show_ui' => true,
+			'show_in_menu' => false,
+			'show_in_nav_menus' => false,
+			'show_in_rest' => true,
+			'supports' => array('title', 'editor'),
 			'hierarchical' => true,
 			'has_archive' => false,
 		));
@@ -830,7 +1409,7 @@ class mf_fortnox
 			//$arr_settings['setting_fortnox_access_token'] = __("Access Token", 'lang_fortnox');
 			//$arr_settings['setting_fortnox_refresh_token'] = __("Refresh Token", 'lang_fortnox');
 
-			if(get_option('setting_fortnox_authorization_code') != '' || get_option('setting_fortnox_refresh_token') != '' || get_option('setting_fortnox_access_token') != '')
+			if(get_option('setting_fortnox_authorization_code') != '' || get_option('setting_fortnox_refresh_token') != '' || get_option('setting_fortnox_access_token') != '' || get_option('option_fortnox_database_number') != '')
 			{
 				$arr_settings['setting_fortnox_endpoint'] = __("Endpoint", 'lang_fortnox');
 				$arr_settings['setting_fortnox_debug'] = __("Debug", 'lang_fortnox');
@@ -1042,20 +1621,25 @@ class mf_fortnox
 
 		if(get_option('setting_fortnox_authorization_code') != '')
 		{
-			$arr_data['generate_access_token'] = __("Generate Access Token from Access Code", 'lang_membership_io');
+			$arr_data['generate_access_token'] = __("Generate Access Token from Access Code", 'lang_fortnox');
 		}
 
 		if(get_option('setting_fortnox_refresh_token') != '')
 		{
-			$arr_data['generate_access_token_from_refresh'] = __("Generate Access Token from Refresh Token", 'lang_membership_io');
+			$arr_data['generate_access_token_from_refresh'] = __("Generate Access Token from Refresh Token", 'lang_fortnox');
+		}
+
+		if(get_option('option_fortnox_database_number') != '')
+		{
+			$arr_data['generate_access_token_from_tenant_id'] = __("Generate Access Token from Tenant ID", 'lang_fortnox');
 		}
 
 		if(get_option('setting_fortnox_access_token') != '')
 		{
-			$arr_data['companyinformation'] = __("Company Information", 'lang_membership_io');
-			$arr_data['invoices'] = __("Invoices", 'lang_membership_io');
-			$arr_data['payments'] = __("Payments", 'lang_membership_io');
-			$arr_data['vouchers'] = __("Vouchers", 'lang_membership_io');
+			$arr_data['companyinformation'] = __("Company Information", 'lang_fortnox');
+			$arr_data['invoices'] = __("Invoices", 'lang_fortnox');
+			$arr_data['payments'] = __("Payments", 'lang_fortnox');
+			$arr_data['vouchers'] = __("Vouchers", 'lang_fortnox');
 		}
 
 		echo show_select(array('data' => $arr_data, 'name' => $setting_key, 'value' => $option, 'allow_hidden_field' => false));
@@ -1077,7 +1661,7 @@ class mf_fortnox
 
 	function admin_menu()
 	{
-		$menu_start = "edit.php?post_type=".$this->post_type;
+		$menu_start = "edit.php?post_type=".$this->post_type_customer;
 		$menu_capability = 'edit_posts';
 
 		$menu_title = __("Fortnox", 'lang_fortnox');
@@ -1085,6 +1669,12 @@ class mf_fortnox
 
 		$menu_title = __("Customers", 'lang_fortnox');
 		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, $menu_start);
+
+		$menu_title = __("Invoices", 'lang_fortnox');
+		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_invoices);
+
+		$menu_title = __("Payments", 'lang_fortnox');
+		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_payments);
 
 		$menu_title = __("Vouchers", 'lang_fortnox');
 		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_vouchers);
@@ -1106,9 +1696,26 @@ class mf_fortnox
 
 		switch($post_type)
 		{
-			case $this->post_type:
+			case $this->post_type_customer:
 				//$columns['customer_id'] = __("ID", 'lang_fortnox');
-				//$columns['contact'] = __("Contact", 'lang_fortnox');
+				$columns['payments'] = __("Payments", 'lang_fortnox');
+				$columns['invoices'] = __("Invoices", 'lang_fortnox');
+				$columns['vouchers'] = __("Vouchers", 'lang_fortnox');
+			break;
+
+			case $this->post_type_invoices:
+				//$columns['invoice_id'] = __("ID", 'lang_fortnox');
+				$columns['post_customer_id'] = __("Customer", 'lang_fortnox');
+			break;
+
+			case $this->post_type_payments:
+				//$columns['payment_id'] = __("ID", 'lang_fortnox');
+				$columns['post_customer_id'] = __("Customer", 'lang_fortnox');
+				$columns['payment_amount'] = __("Amount", 'lang_fortnox');
+				$columns['payment_due_date'] = __("Due Date", 'lang_fortnox');
+				$columns['payment_voucher_number'] = __("Number", 'lang_fortnox');
+				$columns['payment_voucher_series'] = __("Series", 'lang_fortnox');
+				$columns['payment_voucher_year'] = __("Year", 'lang_fortnox');
 			break;
 
 			case $this->post_type_vouchers:
@@ -1135,10 +1742,10 @@ class mf_fortnox
 
 		switch($post->post_type)
 		{
-			case $this->post_type:
+			case $this->post_type_customer:
 				switch($column)
 				{
-					/*case 'customer_id':
+					case 'customer_id':
 						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
 						if($post_meta != '')
@@ -1147,27 +1754,84 @@ class mf_fortnox
 						}
 					break;
 
-					case 'contact':
-						$post_meta = get_post_meta($post_id, $this->meta_prefix.'customer_email', true);
+					case 'payments':
+					case 'invoices':
+					case 'vouchers':
+						$post_type_temp = $this->post_type.'_'.$column;
+
+						$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'customer_id', $post_type_temp, $post_id));
+
+						echo $wpdb->num_rows;
+					break;
+				}
+			break;
+
+			case $this->post_type_invoices:
+				switch($column)
+				{
+					case 'invoice_id':
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
 						if($post_meta != '')
 						{
-							//$obj_encryption = new mf_encryption(__CLASS__);
-							//$post_meta = $obj_encryption->decrypt($post_meta, md5(AUTH_KEY));
-
-							echo "<a href='mailto:".$post_meta."' title='".$post_meta."'><i class='fa fa-paper-plane fa-lg'></i></a> ";
+							echo $post_meta;
 						}
+					break;
 
-						$post_meta = get_post_meta($post_id, $this->meta_prefix.'customer_phone', true);
+					case 'post_customer_id':
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
 						if($post_meta != '')
 						{
-							$obj_encryption = new mf_encryption(__CLASS__);
-							$post_meta = $obj_encryption->decrypt($post_meta, md5(AUTH_KEY));
-
-							echo "<a href='tel:".$post_meta."' title='".$post_meta."'><i class='fa fa-phone fa-lg'></i></a> ";
+							echo $post_meta;
 						}
-					break;*/
+					break;
+				}
+			break;
+
+			case $this->post_type_payments:
+				switch($column)
+				{
+					case 'post_customer_id':
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
+
+						if($post_meta != '')
+						{
+							echo $post_meta;
+						}
+					break;
+					
+					case 'payment_amount':
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
+
+						if($post_meta != '')
+						{
+							$payment_currency = get_post_meta($post_id, $this->meta_prefix.'payment_currency', true);
+
+							echo $post_meta." ".$payment_currency;
+						}
+					break;
+
+					case 'payment_due_date':
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
+
+						if($post_meta != '')
+						{
+							echo format_date($post_meta);
+						}
+					break;
+
+					case 'payment_id':
+					case 'payment_voucher_number':
+					case 'payment_voucher_series':
+					case 'payment_voucher_year':
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
+
+						if($post_meta != '')
+						{
+							echo $post_meta;
+						}
+					break;
 				}
 			break;
 

@@ -3,14 +3,14 @@
 Plugin Name: MF Fortnox
 Plugin URI: https://github.com/frostkom/mf_fortnox
 Description: Adds support for communicating with the Fortnox API
-Version: 1.0.6
+Version: 1.1.0
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://martinfors.se
 Text Domain: lang_fortnox
 Domain Path: /lang
 
-Documentation: https://support.fortnox.se/kom-igang/integrationer/kom-igang-med-utvecklarportalen alt. https://api.fortnox.se/apidocs
+Documentation: https://support.fortnox.se/kom-igang/integrationer/kom-igang-med-utvecklarportalen alt. https://www.fortnox.se/developer/authorization alt. https://api.fortnox.se/apidocs
 */
 
 if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') && is_plugin_active("mf_base/index.php"))
@@ -31,8 +31,12 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 		add_filter('pre_update_option', array($obj_fortnox, 'pre_update_option'), 10, 3);
 		add_action('admin_menu', array($obj_fortnox, 'admin_menu'));
 
-		add_filter('manage_'.$obj_fortnox->post_type.'_posts_columns', array($obj_fortnox, 'column_header'), 5);
-		add_action('manage_'.$obj_fortnox->post_type.'_posts_custom_column', array($obj_fortnox, 'column_cell'), 5, 2);
+		add_filter('manage_'.$obj_fortnox->post_type_customer.'_posts_columns', array($obj_fortnox, 'column_header'), 5);
+		add_action('manage_'.$obj_fortnox->post_type_customer.'_posts_custom_column', array($obj_fortnox, 'column_cell'), 5, 2);
+		add_filter('manage_'.$obj_fortnox->post_type_invoices.'_posts_columns', array($obj_fortnox, 'column_header'), 5);
+		add_action('manage_'.$obj_fortnox->post_type_invoices.'_posts_custom_column', array($obj_fortnox, 'column_cell'), 5, 2);
+		add_filter('manage_'.$obj_fortnox->post_type_payments.'_posts_columns', array($obj_fortnox, 'column_header'), 5);
+		add_action('manage_'.$obj_fortnox->post_type_payments.'_posts_custom_column', array($obj_fortnox, 'column_cell'), 5, 2);
 		add_filter('manage_'.$obj_fortnox->post_type_vouchers.'_posts_columns', array($obj_fortnox, 'column_header'), 5);
 		add_action('manage_'.$obj_fortnox->post_type_vouchers.'_posts_custom_column', array($obj_fortnox, 'column_cell'), 5, 2);
 

@@ -28,7 +28,7 @@ if($code != '')
 {
 	update_option('setting_fortnox_authorization_code', $code, false);
 
-	do_log("Authorization Code Saved: ".$code.", ".$state." (".var_export($_REQUEST, true).")", 'publish', false);
+	do_log("Authorization Code Saved: ".$code.", ".$state." (".var_export($_REQUEST, true).")", 'notification', false);
 }
 
 else

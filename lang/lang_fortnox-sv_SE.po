@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-23 20:15-0000\n"
+"POT-Creation-Date: 2026-05-11 14:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -15,308 +15,337 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-#: ../include/classes.php:737
+#: ../include/classes.php:1253
 msgid "You have to enter Client ID and Secret first"
 msgstr "Du behöver först ange Klient-ID och Klient-hemlighet"
 
-#: ../include/classes.php:776
-#: ../include/classes.php:778
-#: ../include/classes.php:1086
+#: ../include/classes.php:1299
+#: ../include/classes.php:1301
+#: ../include/classes.php:1654
 msgid "Customers"
 msgstr "Kunder"
 
-#: ../include/classes.php:777
-#: ../include/classes.php:918
+#: ../include/classes.php:1300
+#: ../include/classes.php:1481
 msgid "Customer"
 msgstr "Kund"
 
-#: ../include/classes.php:779
-#: ../include/classes.php:799
+#: ../include/classes.php:1302
+#: ../include/classes.php:1322
+#: ../include/classes.php:1342
+#: ../include/classes.php:1362
 msgid "List"
 msgstr "Lista"
 
-#: ../include/classes.php:780
-#: ../include/classes.php:800
+#: ../include/classes.php:1303
+#: ../include/classes.php:1323
+#: ../include/classes.php:1343
+#: ../include/classes.php:1363
 msgid "Edit"
 msgstr "Redigera"
 
-#: ../include/classes.php:781
-#: ../include/classes.php:801
+#: ../include/classes.php:1304
+#: ../include/classes.php:1324
+#: ../include/classes.php:1344
+#: ../include/classes.php:1364
 msgid "View"
 msgstr "Visa"
 
-#: ../include/classes.php:782
-#: ../include/classes.php:802
+#: ../include/classes.php:1305
+#: ../include/classes.php:1325
+#: ../include/classes.php:1345
+#: ../include/classes.php:1365
 msgid "Add New"
 msgstr "Lägg till ny"
 
-#: ../include/classes.php:796
-#: ../include/classes.php:798
-#: ../include/classes.php:1058
-#: ../include/classes.php:1089
-msgid "Vouchers"
-msgstr "Kuponger"
-
-#: ../include/classes.php:797
-msgid "Voucher"
-msgstr "Kupong"
-
-#: ../include/classes.php:822
-msgid "Client ID"
-msgstr "Klient-ID"
-
-#: ../include/classes.php:823
-msgid "Client Secret"
-msgstr "Klient-hemlighet"
-
-#: ../include/classes.php:827
-#: ../include/classes.php:993
-msgid "Scope"
-msgstr "Omfång"
-
-#: ../include/classes.php:835
-msgid "Endpoint"
-msgstr ""
-
-#: ../include/classes.php:836
-msgid "Debug"
-msgstr "Felsök"
-
-#: ../include/classes.php:863
-#: ../include/classes.php:1083
-msgid "Fortnox"
-msgstr ""
-
-#: ../include/classes.php:875
-msgid "Step 1: Get access to the account"
-msgstr ""
-
-#: ../include/classes.php:877
-#, php-format
-msgid "Send your social security number and e-mail to the client for them to notice %s, so that you can log in with %s."
-msgstr ""
-
-#: ../include/classes.php:878
-msgid "Fill in your name, email address, and create a password."
-msgstr ""
-
-#: ../include/classes.php:879
-msgid "Confirm your email address by clicking on the link sent to your inbox."
-msgstr ""
-
-#: ../include/classes.php:881
-msgid "Step 2: Log in to your Account"
-msgstr ""
-
-#: ../include/classes.php:883
-#, php-format
-msgid "Go to %sFortnox's website%s."
-msgstr ""
-
-#: ../include/classes.php:884
-msgid "Navigate to Developer Portal in the sidebar."
-msgstr ""
-
-#: ../include/classes.php:885
-msgid "Press on Create Integration and give it a name."
-msgstr ""
-
-#: ../include/classes.php:886
-msgid "Copy Client ID and Secret and enter into theses fields."
-msgstr ""
-
-#: ../include/classes.php:911
-msgid "Archive"
-msgstr "Arkiv"
-
-#: ../include/classes.php:912
-msgid "Article"
-msgstr "Artikel"
-
-#: ../include/classes.php:913
-msgid "Bookkeeping"
-msgstr "Bokföring"
-
-#: ../include/classes.php:914
-#: ../include/classes.php:1055
-msgid "Company Information"
-msgstr "Företagsinformation"
-
-#: ../include/classes.php:915
-msgid "Costcenter"
-msgstr "Kostcenter"
-
-#: ../include/classes.php:916
-msgid "Connect File"
-msgstr "Koppla fil"
-
-#: ../include/classes.php:917
-msgid "Currency"
-msgstr "Valuta"
-
-#: ../include/classes.php:919
-msgid "Delete Voucher"
-msgstr "Radera kupong"
-
-#: ../include/classes.php:920
-msgid "Developer API"
-msgstr "Utvecklar-API"
-
-#: ../include/classes.php:921
-msgid "Invoice"
-msgstr "Faktura"
-
-#: ../include/classes.php:922
-msgid "NOX Finance Invoice"
-msgstr "NOX finansfaktura"
-
-#: ../include/classes.php:923
-msgid "Order"
-msgstr "Beställning"
-
-#: ../include/classes.php:924
-msgid "Inbox"
-msgstr "Inkorg"
-
-#: ../include/classes.php:925
-msgid "Payment"
-msgstr "Betalning"
-
-#: ../include/classes.php:926
-msgid "Price"
-msgstr "Pris"
-
-#: ../include/classes.php:927
-msgid "Print"
-msgstr "Skriv ut"
-
-#: ../include/classes.php:928
-msgid "Profile"
-msgstr "Profil"
-
-#: ../include/classes.php:929
-msgid "Project"
-msgstr "Projekt"
-
-#: ../include/classes.php:930
-#: ../include/classes.php:1094
-msgid "Settings"
-msgstr "Inställningar"
-
-#: ../include/classes.php:931
-msgid "Supplier"
-msgstr "Leverantör"
-
-#: ../include/classes.php:932
-msgid "Supplier Invoice"
-msgstr "Leverantörsfakturor"
-
-#: ../include/classes.php:933
-msgid "Warehouse"
-msgstr "Lager"
-
-#: ../include/classes.php:940
-msgid "Step 3: Set additional parameters"
-msgstr "Steg 3: Ange fler parametrar"
-
-#: ../include/classes.php:942
-#, php-format
-msgid "Enter %s into the Redirect URI field."
-msgstr ""
-
-#: ../include/classes.php:943
-msgid "Check all the rights that you need access to."
-msgstr ""
-
-#: ../include/classes.php:944
-msgid "Press Save."
-msgstr "Tryck på Spara."
-
-#: ../include/classes.php:945
-msgid "Choose the Scope you want above and save the settings on this page."
-msgstr ""
-
-#: ../include/classes.php:954
-msgid "Authorization Code"
-msgstr "Auktoriseringskod"
-
-#: ../include/classes.php:977
-msgid "Get your code here"
-msgstr "Hämta din kod här"
-
-#: ../include/classes.php:986
-msgid "Database Number"
-msgstr "Databasnummer"
-
-#: ../include/classes.php:1000
-msgid "Access Token"
-msgstr "Access-token"
-
-#: ../include/classes.php:1007
-msgid "Refresh Token"
-msgstr "Refresh-token"
-
-#: ../include/classes.php:1045
-msgid "Generate Access Token from Access Code"
-msgstr "Generera Access-token från auktoriseringskod"
-
-#: ../include/classes.php:1050
-msgid "Generate Access Token from Refresh Token"
-msgstr "Generera Access-token från Refresh-token"
-
-#: ../include/classes.php:1056
+#: ../include/classes.php:1319
+#: ../include/classes.php:1321
+#: ../include/classes.php:1624
+#: ../include/classes.php:1657
 msgid "Invoices"
 msgstr "Fakturor"
 
-#: ../include/classes.php:1057
+#: ../include/classes.php:1320
+#: ../include/classes.php:1484
+msgid "Invoice"
+msgstr "Faktura"
+
+#: ../include/classes.php:1339
+#: ../include/classes.php:1341
+#: ../include/classes.php:1625
+#: ../include/classes.php:1660
 msgid "Payments"
 msgstr "Betalningar"
 
-#: ../include/classes.php:1073
+#: ../include/classes.php:1340
+#: ../include/classes.php:1488
+msgid "Payment"
+msgstr "Betalning"
+
+#: ../include/classes.php:1359
+#: ../include/classes.php:1361
+#: ../include/classes.php:1626
+#: ../include/classes.php:1663
+msgid "Vouchers"
+msgstr "Kuponger"
+
+#: ../include/classes.php:1360
+msgid "Voucher"
+msgstr "Kupong"
+
+#: ../include/classes.php:1385
+msgid "Client ID"
+msgstr "Klient-ID"
+
+#: ../include/classes.php:1386
+msgid "Client Secret"
+msgstr "Klient-hemlighet"
+
+#: ../include/classes.php:1390
+#: ../include/classes.php:1556
+msgid "Scope"
+msgstr "Funktioner"
+
+#: ../include/classes.php:1398
+msgid "Endpoint"
+msgstr ""
+
+#: ../include/classes.php:1399
+msgid "Debug"
+msgstr "Felsök"
+
+#: ../include/classes.php:1426
+#: ../include/classes.php:1651
+msgid "Fortnox"
+msgstr ""
+
+#: ../include/classes.php:1438
+msgid "Step 1: Get access to the account"
+msgstr "Steg 1: Få tillgång till kontot"
+
+#: ../include/classes.php:1440
+#, php-format
+msgid "Send your social security number and e-mail to the client for them to notice %s, so that you can log in with %s."
+msgstr "Skicka ditt personnummer och e-post till din kund så de kan meddela %s, så att du kan logga in med %s."
+
+#: ../include/classes.php:1441
+msgid "Fill in your name, email address, and create a password."
+msgstr "Ange ditt namn, e-postadress och skapa ett lösenord."
+
+#: ../include/classes.php:1442
+msgid "Confirm your email address by clicking on the link sent to your inbox."
+msgstr "Bekräfta din e-postadress genom att klicka på länken i din inkorg."
+
+#: ../include/classes.php:1444
+msgid "Step 2: Log in to your Account"
+msgstr "Steg 2: Logga in på ditt konto"
+
+#: ../include/classes.php:1446
+#, php-format
+msgid "Go to %sFortnox's website%s."
+msgstr "Gå till %Fortnox webbsida%s."
+
+#: ../include/classes.php:1447
+msgid "Navigate to Developer Portal in the sidebar."
+msgstr "Navigera till Utvecklarportalen i sidomenyn."
+
+#: ../include/classes.php:1448
+msgid "Press on Create Integration and give it a name."
+msgstr "Tryck på Skapa integration och ge den ett namn."
+
+#: ../include/classes.php:1449
+msgid "Copy Client ID and Secret and enter into theses fields."
+msgstr "Kopiera Klient-ID och Hemlig nyckel, och klistar in i dessa fält."
+
+#: ../include/classes.php:1474
+msgid "Archive"
+msgstr "Arkiv"
+
+#: ../include/classes.php:1475
+msgid "Article"
+msgstr "Artikel"
+
+#: ../include/classes.php:1476
+msgid "Bookkeeping"
+msgstr "Bokföring"
+
+#: ../include/classes.php:1477
+#: ../include/classes.php:1623
+msgid "Company Information"
+msgstr "Företagsinformation"
+
+#: ../include/classes.php:1478
+msgid "Costcenter"
+msgstr "Kostcenter"
+
+#: ../include/classes.php:1479
+msgid "Connect File"
+msgstr "Koppla fil"
+
+#: ../include/classes.php:1480
+msgid "Currency"
+msgstr "Valuta"
+
+#: ../include/classes.php:1482
+msgid "Delete Voucher"
+msgstr "Radera kupong"
+
+#: ../include/classes.php:1483
+msgid "Developer API"
+msgstr "Utvecklar-API"
+
+#: ../include/classes.php:1485
+msgid "NOX Finance Invoice"
+msgstr "NOX finansfaktura"
+
+#: ../include/classes.php:1486
+msgid "Order"
+msgstr "Beställning"
+
+#: ../include/classes.php:1487
+msgid "Inbox"
+msgstr "Inkorg"
+
+#: ../include/classes.php:1489
+msgid "Price"
+msgstr "Pris"
+
+#: ../include/classes.php:1490
+msgid "Print"
+msgstr "Skriv ut"
+
+#: ../include/classes.php:1491
+msgid "Profile"
+msgstr "Profil"
+
+#: ../include/classes.php:1492
+msgid "Project"
+msgstr "Projekt"
+
+#: ../include/classes.php:1493
+#: ../include/classes.php:1668
+msgid "Settings"
+msgstr "Inställningar"
+
+#: ../include/classes.php:1494
+msgid "Supplier"
+msgstr "Leverantör"
+
+#: ../include/classes.php:1495
+msgid "Supplier Invoice"
+msgstr "Leverantörsfakturor"
+
+#: ../include/classes.php:1496
+msgid "Warehouse"
+msgstr "Lager"
+
+#: ../include/classes.php:1503
+msgid "Step 3: Set additional parameters"
+msgstr "Steg 3: Ange fler parametrar"
+
+#: ../include/classes.php:1505
+#, php-format
+msgid "Enter %s into the Redirect URI field."
+msgstr "Fyll i %s i fältet för Redirect URI."
+
+#: ../include/classes.php:1506
+msgid "Check all the rights that you need access to."
+msgstr "Bocka i de rättigheter som ni behövertillgång till."
+
+#: ../include/classes.php:1507
+msgid "Press Save."
+msgstr "Tryck på Spara."
+
+#: ../include/classes.php:1508
+msgid "Choose the Scope you want above and save the settings on this page."
+msgstr "Välj de funktioner ovan som ni önskar och spara inställningarna på denna sida."
+
+#: ../include/classes.php:1517
+msgid "Authorization Code"
+msgstr "Auktoriseringskod"
+
+#: ../include/classes.php:1540
+msgid "Get your code here"
+msgstr "Hämta din kod här"
+
+#: ../include/classes.php:1549
+msgid "Database Number"
+msgstr "Databasnummer"
+
+#: ../include/classes.php:1563
+msgid "Access Token"
+msgstr "Access-token"
+
+#: ../include/classes.php:1570
+msgid "Refresh Token"
+msgstr "Refresh-token"
+
+#: ../include/classes.php:1608
+msgid "Generate Access Token from Access Code"
+msgstr "Generera Access-token från auktoriseringskod"
+
+#: ../include/classes.php:1613
+msgid "Generate Access Token from Refresh Token"
+msgstr "Generera Access-token från Refresh-token"
+
+#: ../include/classes.php:1618
+msgid "Generate Access Token from Tenant ID"
+msgstr "Generera Access-token från kund-ID"
+
+#: ../include/classes.php:1641
 msgid "Run Now"
 msgstr "Kör nu"
 
-#: ../include/classes.php:1116
-msgid "Description"
-msgstr "Beskrivning"
-
-#: ../include/classes.php:1117
-msgid "Information"
-msgstr ""
-
-#: ../include/classes.php:1118
-msgid "Account"
-msgstr "Konto"
-
-#: ../include/classes.php:1119
+#: ../include/classes.php:1693
+#: ../include/classes.php:1705
 msgid "Amount"
 msgstr "Antal"
 
-#: ../include/classes.php:1120
-msgid "Reference No."
-msgstr "Referensnummer"
+#: ../include/classes.php:1694
+msgid "Due Date"
+msgstr "Förfallodatum"
 
-#: ../include/classes.php:1121
-msgid "Reference Type"
-msgstr "Referenstyp"
-
-#: ../include/classes.php:1122
+#: ../include/classes.php:1695
+#: ../include/classes.php:1708
 msgid "Number"
 msgstr "Nummer"
 
-#: ../include/classes.php:1123
+#: ../include/classes.php:1696
+#: ../include/classes.php:1709
 msgid "Series"
 msgstr "Serie"
 
-#: ../include/classes.php:1124
+#: ../include/classes.php:1697
+#: ../include/classes.php:1710
 msgid "Year"
 msgstr "År"
 
-#: ../include/classes.php:1125
+#: ../include/classes.php:1702
+msgid "Description"
+msgstr "Beskrivning"
+
+#: ../include/classes.php:1703
+msgid "Information"
+msgstr ""
+
+#: ../include/classes.php:1704
+msgid "Account"
+msgstr "Konto"
+
+#: ../include/classes.php:1706
+msgid "Reference No."
+msgstr "Referensnummer"
+
+#: ../include/classes.php:1707
+msgid "Reference Type"
+msgstr "Referenstyp"
+
+#: ../include/classes.php:1711
 msgid "State"
 msgstr "Status"
 
-#: ../include/classes.php:1200
+#: ../include/classes.php:1760
+#: ../include/classes.php:1813
 msgid "USD"
 msgstr "kr"
 
@@ -831,9 +860,6 @@ msgstr "kr"
 
 #~ msgid "Start Date"
 #~ msgstr "Start"
-
-#~ msgid "End Date"
-#~ msgstr "Slut"
 
 #~ msgid "Lease Agreements"
 #~ msgstr "Hyresavtal"
