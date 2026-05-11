@@ -35,7 +35,7 @@ class mf_fortnox
 			),
 		);
 
-		$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'customer_id', $this->post_type_customer, $customer_id));
+		$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_date, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'customer_id', $this->post_type_customer, $customer_id));
 		$customer_amount = count($result);
 
 		if($customer_amount > 0)
@@ -45,18 +45,12 @@ class mf_fortnox
 			foreach($result as $r)
 			{
 				$post_customer_id = $r->ID;
+				$post_customer_date = $r->post_date;
 				$post_customer_modified = $r->post_modified;
 
 				if($i == 0)
 				{
-					/*$post_date = get_post_field('post_date', $post_customer_id);
-
-					if($customer_created != $post_date)
-					{
-						//do_log(__FUNCTION__." - Created: ".$post_date." -> ".$customer_created, 'publish', false);
-
-						$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $customer_created, $post_customer_id));
-					}*/
+					$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $post_customer_date, $post_customer_id));
 
 					if($post_customer_modified < date("Y-m-d H:i:s", strtotime(current_time('mysql')." -4 hour")))
 					{
@@ -730,7 +724,7 @@ class mf_fortnox
 											),
 										);
 
-										$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'invoice_id', $this->post_type_invoices, $invoice_id));
+										$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_date, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'invoice_id', $this->post_type_invoices, $invoice_id));
 										$invoice_amount = count($result);
 
 										if($invoice_amount > 0)
@@ -740,15 +734,14 @@ class mf_fortnox
 											foreach($result as $r)
 											{
 												$post_invoice_id = $r->ID;
+												$post_invoice_date = $r->post_date;
 												$post_invoice_modified = $r->post_modified;
 
 												if($i == 0)
 												{
-													$post_date = get_post_field('post_date', $post_invoice_id);
-
-													if($invoice_created != $post_date)
+													if($invoice_created != $post_invoice_date)
 													{
-														//do_log(__FUNCTION__." - Created: ".$post_date." -> ".$invoice_created, 'publish', false);
+														//do_log(__FUNCTION__." - Created: ".$post_invoice_date." -> ".$invoice_created, 'publish', false);
 
 														$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $invoice_created, $post_invoice_id));
 													}
@@ -890,7 +883,7 @@ class mf_fortnox
 											),
 										);
 
-										$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'payment_id', $this->post_type_payments, $payment_id));
+										$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_date, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'payment_id', $this->post_type_payments, $payment_id));
 										$payment_amount = count($result);
 
 										if($payment_amount > 0)
@@ -900,15 +893,14 @@ class mf_fortnox
 											foreach($result as $r)
 											{
 												$post_payment_id = $r->ID;
+												$post_payment_date = $r->post_date;
 												$post_payment_modified = $r->post_modified;
 
 												if($i == 0)
 												{
-													$post_date = get_post_field('post_date', $post_payment_id);
-
-													if($payment_created != $post_date)
+													if($payment_created != $post_payment_date)
 													{
-														//do_log(__FUNCTION__." - Created: ".$post_date." -> ".$payment_created, 'publish', false);
+														//do_log(__FUNCTION__." - Created: ".$post_payment_date." -> ".$payment_created, 'publish', false);
 
 														$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $payment_created, $post_payment_id));
 													}
@@ -1061,7 +1053,7 @@ class mf_fortnox
 												),
 											);
 
-											$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'voucher_id', $this->post_type_vouchers, $voucher_id));
+											$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_date, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'voucher_id', $this->post_type_vouchers, $voucher_id));
 											$voucher_amount = count($result);
 
 											if($voucher_amount > 0)
@@ -1071,15 +1063,14 @@ class mf_fortnox
 												foreach($result as $r)
 												{
 													$post_voucher_id = $r->ID;
+													$post_voucher_date = $r->post_date;
 													$post_voucher_modified = $r->post_modified;
 
 													if($i == 0)
 													{
-														$post_date = get_post_field('post_date', $post_voucher_id);
-
-														if($voucher_created != $post_date)
+														if($voucher_created != $post_voucher_date)
 														{
-															//do_log(__FUNCTION__." - Created: ".$post_date." -> ".$voucher_created, 'publish', false);
+															//do_log(__FUNCTION__." - Created: ".$post_voucher_date." -> ".$voucher_created, 'publish', false);
 
 															$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $voucher_created, $post_voucher_id));
 														}
@@ -1800,7 +1791,7 @@ class mf_fortnox
 							echo $post_meta;
 						}
 					break;
-					
+
 					case 'payment_amount':
 						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
