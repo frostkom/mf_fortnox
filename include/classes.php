@@ -35,7 +35,7 @@ class mf_fortnox
 			),
 		);
 
-		$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_date, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'customer_id', $this->post_type_customer, $customer_id));
+		$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_date, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'customer_id', $this->post_type_customer, $customer_id));
 		$customer_amount = count($result);
 
 		if($customer_amount > 0)
@@ -293,14 +293,16 @@ class mf_fortnox
 
 			if(isset($arr_payment_info['array']))
 			{
-				$post_customer_id = $this->insert_or_update_customer(array('id' => $arr_payment_info['array']['payment']['InvoiceCustomerNumber'], 'name' => $arr_payment_info['array']['payment']['InvoiceCustomerName']));
+				$post_customer_id = $this->insert_or_update_customer(array('id' => $arr_payment_info['array']['InvoicePayment']['InvoiceCustomerNumber'], 'name' => $arr_payment_info['array']['InvoicePayment']['InvoiceCustomerName']));
+
+				$post_data['post_title'] = $arr_payment_info['array']['InvoicePayment']['InvoiceCustomerName']." ".$arr_payment_info['array']['InvoicePayment']['Number'];
 
 				$payment_due_date = $arr_payment_info['array']['InvoicePayment']['InvoiceDueDate'];
-				$payment_mode_of_payment = $arr_payment_info['array']['payment']['ModeOfPayment'];
-				$payment_mode_of_payment_account = $arr_payment_info['array']['payment']['ModeOfPaymentAccount'];
-				$payment_voucher_number = $arr_payment_info['array']['payment']['VoucherNumber'];
-				$payment_voucher_series = $arr_payment_info['array']['payment']['VoucherSeries'];
-				$payment_voucher_year = $arr_payment_info['array']['payment']['VoucherYear'];
+				$payment_mode_of_payment = $arr_payment_info['array']['InvoicePayment']['ModeOfPayment'];
+				$payment_mode_of_payment_account = $arr_payment_info['array']['InvoicePayment']['ModeOfPaymentAccount'];
+				$payment_voucher_number = $arr_payment_info['array']['InvoicePayment']['VoucherNumber'];
+				$payment_voucher_series = $arr_payment_info['array']['InvoicePayment']['VoucherSeries'];
+				$payment_voucher_year = $arr_payment_info['array']['InvoicePayment']['VoucherYear'];
 			}
 		}
 
@@ -677,7 +679,7 @@ class mf_fortnox
 									foreach($arr_json['Invoices'] as $arr_invoice)
 									{
 										$invoice_id = $arr_invoice['DocumentNumber'];
-										$invoice_name = "";
+										$invoice_name = $arr_invoice['CustomerName']." - ".$arr_invoice['DocumentNumber'];
 										$invoice_balance = $arr_invoice['Balance'];
 										$invoice_booked = $arr_invoice['Booked'];
 										$invoice_cancelled = $arr_invoice['Cancelled'];
@@ -861,7 +863,7 @@ class mf_fortnox
 									foreach($arr_json['InvoicePayments'] as $arr_payment)
 									{
 										$payment_id = $arr_payment['Number'];
-										$payment_name = "";
+										$payment_name = $arr_payment['Number'];
 										$payment_amount = $arr_payment['Amount'];
 										$payment_booked = $arr_payment['Booked'];
 										$payment_currency = $arr_payment['Currency'];
@@ -900,8 +902,6 @@ class mf_fortnox
 												{
 													if($payment_created != $post_payment_date)
 													{
-														//do_log(__FUNCTION__." - Created: ".$post_payment_date." -> ".$payment_created, 'publish', false);
-
 														$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $payment_created, $post_payment_id));
 													}
 
@@ -1312,7 +1312,7 @@ class mf_fortnox
 				'add_new_item' => __("Add New", 'lang_fortnox'),
 			),
 			'public' => false,
-			'show_ui' => true,
+			'show_ui' => current_user_can('manage_options'),
 			'show_in_menu' => false,
 			'show_in_nav_menus' => false,
 			'show_in_rest' => true,
@@ -1332,7 +1332,7 @@ class mf_fortnox
 				'add_new_item' => __("Add New", 'lang_fortnox'),
 			),
 			'public' => false,
-			'show_ui' => true,
+			'show_ui' => current_user_can('manage_options'),
 			'show_in_menu' => false,
 			'show_in_nav_menus' => false,
 			'show_in_rest' => true,
@@ -1352,7 +1352,7 @@ class mf_fortnox
 				'add_new_item' => __("Add New", 'lang_fortnox'),
 			),
 			'public' => false,
-			'show_ui' => true,
+			'show_ui' => current_user_can('manage_options'),
 			'show_in_menu' => false,
 			'show_in_nav_menus' => false,
 			'show_in_rest' => true,
@@ -1372,7 +1372,7 @@ class mf_fortnox
 				'add_new_item' => __("Add New", 'lang_fortnox'),
 			),
 			'public' => false,
-			'show_ui' => true,
+			'show_ui' => current_user_can('manage_options'),
 			'show_in_menu' => false,
 			'show_in_nav_menus' => false,
 			'show_in_rest' => true,
@@ -1653,7 +1653,7 @@ class mf_fortnox
 	function admin_menu()
 	{
 		$menu_start = "edit.php?post_type=".$this->post_type_customer;
-		$menu_capability = 'edit_posts';
+		$menu_capability = 'manage_options';
 
 		$menu_title = __("Fortnox", 'lang_fortnox');
 		add_menu_page($menu_title, $menu_title, $menu_capability, $menu_start, '', 'dashicons-cart', 21);
@@ -1670,11 +1670,30 @@ class mf_fortnox
 		$menu_title = __("Vouchers", 'lang_fortnox');
 		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_vouchers);
 
-		if(IS_EDITOR)
+		if(IS_ADMINISTRATOR)
 		{
 			$menu_title = __("Settings", 'lang_fortnox');
 			add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, admin_url("options-general.php?page=settings_mf_base#settings_fortnox"));
 		}
+	}
+
+	function posts_orderby($orderby_statement, $wp_query)
+	{
+		global $wpdb;
+
+		if($wp_query->is_main_query() && check_var('orderby') == '')
+		{
+			switch($wp_query->get('post_type'))
+			{
+				case $this->post_type_invoices:
+				case $this->post_type_payments:
+				case $this->post_type_vouchers:
+					$orderby_statement = $wpdb->posts.".post_status ASC, ".$wpdb->posts.".post_date DESC";
+				break;
+			}
+		}
+
+		return $orderby_statement;
 	}
 
 	function column_header($columns)
@@ -1688,25 +1707,27 @@ class mf_fortnox
 		switch($post_type)
 		{
 			case $this->post_type_customer:
-				//$columns['customer_id'] = __("ID", 'lang_fortnox');
+				$columns['customer_id'] = __("ID", 'lang_fortnox');
 				$columns['payments'] = __("Payments", 'lang_fortnox');
 				$columns['invoices'] = __("Invoices", 'lang_fortnox');
-				$columns['vouchers'] = __("Vouchers", 'lang_fortnox');
+				//$columns['vouchers'] = __("Vouchers", 'lang_fortnox');
 			break;
 
 			case $this->post_type_invoices:
 				//$columns['invoice_id'] = __("ID", 'lang_fortnox');
 				$columns['post_customer_id'] = __("Customer", 'lang_fortnox');
+				$columns['post_date'] = __("Date", 'lang_fortnox');
 			break;
 
 			case $this->post_type_payments:
 				//$columns['payment_id'] = __("ID", 'lang_fortnox');
 				$columns['post_customer_id'] = __("Customer", 'lang_fortnox');
 				$columns['payment_amount'] = __("Amount", 'lang_fortnox');
-				$columns['payment_due_date'] = __("Due Date", 'lang_fortnox');
-				$columns['payment_voucher_number'] = __("Number", 'lang_fortnox');
-				$columns['payment_voucher_series'] = __("Series", 'lang_fortnox');
-				$columns['payment_voucher_year'] = __("Year", 'lang_fortnox');
+				$columns['post_date'] = __("Date", 'lang_fortnox');
+				//$columns['payment_due_date'] = __("Due Date", 'lang_fortnox');
+				//$columns['payment_voucher_number'] = __("Number", 'lang_fortnox');
+				//$columns['payment_voucher_series'] = __("Series", 'lang_fortnox');
+				//$columns['payment_voucher_year'] = __("Year", 'lang_fortnox');
 			break;
 
 			case $this->post_type_vouchers:
@@ -1721,6 +1742,7 @@ class mf_fortnox
 				$columns['voucher_series'] = __("Series", 'lang_fortnox');
 				$columns['voucher_year'] = __("Year", 'lang_fortnox');
 				$columns['voucher_approval_state'] = __("State", 'lang_fortnox');
+				$columns['post_date'] = __("Date", 'lang_fortnox');
 			break;
 		}
 
@@ -1736,23 +1758,28 @@ class mf_fortnox
 			case $this->post_type_customer:
 				switch($column)
 				{
-					case 'customer_id':
+					case 'payments':
+					case 'invoices':
+					//case 'vouchers':
+						$post_type_temp = $this->post_type.'_'.$column;
+
+						$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'post_customer_id', $post_type_temp, $post_id));
+
+						echo $wpdb->num_rows;
+
+						if(IS_SUPER_ADMIN && $wpdb->num_rows == 0)
+						{
+							echo " (".$wpdb->last_query.")";
+						}
+					break;
+
+					default:
 						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
 						if($post_meta != '')
 						{
 							echo $post_meta;
 						}
-					break;
-
-					case 'payments':
-					case 'invoices':
-					case 'vouchers':
-						$post_type_temp = $this->post_type.'_'.$column;
-
-						$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'customer_id', $post_type_temp, $post_id));
-
-						echo $wpdb->num_rows;
 					break;
 				}
 			break;
@@ -1760,16 +1787,30 @@ class mf_fortnox
 			case $this->post_type_invoices:
 				switch($column)
 				{
-					case 'invoice_id':
-						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
+					case 'post_customer_id':
+						$customer_id = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
-						if($post_meta != '')
+						if($customer_id > 0)
 						{
-							echo $post_meta;
+							echo get_the_title($customer_id);
+
+							if(IS_SUPER_ADMIN)
+							{
+								echo " (#".$customer_id.")";
+							}
 						}
 					break;
 
-					case 'post_customer_id':
+					case 'post_date':
+						$post_date = get_post_field('post_date', $post_id);
+
+						if($post_date > DEFAULT_DATE)
+						{
+							echo format_date($post_date);
+						}
+					break;
+
+					default:
 						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
 						if($post_meta != '')
@@ -1784,11 +1825,16 @@ class mf_fortnox
 				switch($column)
 				{
 					case 'post_customer_id':
-						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
+						$customer_id = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
-						if($post_meta != '')
+						if($customer_id > 0)
 						{
-							echo $post_meta;
+							echo get_the_title($customer_id);
+
+							if(IS_SUPER_ADMIN)
+							{
+								echo " (#".$customer_id.")";
+							}
 						}
 					break;
 
@@ -1803,6 +1849,15 @@ class mf_fortnox
 						}
 					break;
 
+					case 'post_date':
+						$post_date = get_post_field('post_date', $post_id);
+
+						if($post_date > DEFAULT_DATE)
+						{
+							echo format_date($post_date);
+						}
+					break;
+
 					case 'payment_due_date':
 						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
@@ -1812,10 +1867,7 @@ class mf_fortnox
 						}
 					break;
 
-					case 'payment_id':
-					case 'payment_voucher_number':
-					case 'payment_voucher_series':
-					case 'payment_voucher_year':
+					default:
 						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
 						if($post_meta != '')
@@ -1856,14 +1908,16 @@ class mf_fortnox
 						}
 					break;
 
-					case 'voucher_id':
-					case 'voucher_account':
-					case 'voucher_reference_no':
-					case 'voucher_reference_type':
-					case 'voucher_number':
-					case 'voucher_series':
-					case 'voucher_year':
-					case 'voucher_approval_state':
+					case 'post_date':
+						$post_date = get_post_field('post_date', $post_id);
+
+						if($post_date > DEFAULT_DATE)
+						{
+							echo format_date($post_date);
+						}
+					break;
+
+					default:
 						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
 						if($post_meta != '')
