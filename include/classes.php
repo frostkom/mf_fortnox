@@ -19,7 +19,7 @@ class mf_fortnox
 		$this->meta_prefix = $this->post_type.'_';
 	}
 
-	function insert_or_update_customer($data)
+	function save_customer($data)
 	{
 		global $wpdb, $obj_base;
 
@@ -35,7 +35,7 @@ class mf_fortnox
 			),
 		);
 
-		$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_date, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'customer_id', $this->post_type_customer, $customer_id));
+		$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_date, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND meta_value = %s", $this->meta_prefix.'customer_id', $this->post_type_customer, 'publish', $customer_id));
 		$customer_amount = count($result);
 
 		if($customer_amount > 0)
@@ -75,8 +75,6 @@ class mf_fortnox
 			$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
 
 			$post_customer_id = wp_insert_post($post_data);
-
-			//$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $customer_created, $post_customer_id));
 		}
 
 		return $post_customer_id;
@@ -293,9 +291,9 @@ class mf_fortnox
 
 			if(isset($arr_payment_info['array']))
 			{
-				$post_customer_id = $this->insert_or_update_customer(array('id' => $arr_payment_info['array']['InvoicePayment']['InvoiceCustomerNumber'], 'name' => $arr_payment_info['array']['InvoicePayment']['InvoiceCustomerName']));
+				$post_customer_id = $this->save_customer(array('id' => $arr_payment_info['array']['InvoicePayment']['InvoiceCustomerNumber'], 'name' => $arr_payment_info['array']['InvoicePayment']['InvoiceCustomerName']));
 
-				$post_data['post_title'] = $arr_payment_info['array']['InvoicePayment']['InvoiceCustomerName']." ".$arr_payment_info['array']['InvoicePayment']['Number'];
+				$post_data['post_title'] = "#".$arr_payment_info['array']['InvoicePayment']['Number'];
 
 				$payment_due_date = $arr_payment_info['array']['InvoicePayment']['InvoiceDueDate'];
 				$payment_mode_of_payment = $arr_payment_info['array']['InvoicePayment']['ModeOfPayment'];
@@ -376,17 +374,15 @@ class mf_fortnox
 	{
 		global $wpdb, $obj_base;
 
-		$obj_encryption = new mf_encryption(__CLASS__);
-
-		if(!isset($data['endpoint']))
-		{
-			$data['endpoint'] = get_option('setting_fortnox_endpoint', 'products');
-		}
+		if(!isset($data['page'])){		$data['page'] = 1;}
+		if(!isset($data['endpoint'])){	$data['endpoint'] = get_option('setting_fortnox_endpoint', 'products');}
 
 		$result = array(
 			'success' => false,
 			'html' => "",
 		);
+
+		$obj_encryption = new mf_encryption(__CLASS__);
 
 		$setting_fortnox_client_id = get_option('setting_fortnox_client_id');
 		$setting_fortnox_client_secret = get_option('setting_fortnox_client_secret');
@@ -613,7 +609,7 @@ class mf_fortnox
 				break;
 
 				case 'invoices':
-					$url = "https://api.fortnox.se/3/invoices";
+					$url = "https://api.fortnox.se/3/invoices/".$data['page'];
 
 					$setting_fortnox_access_token = get_option('setting_fortnox_access_token');
 
@@ -676,107 +672,120 @@ class mf_fortnox
 										),
 									)*/
 
-									foreach($arr_json['Invoices'] as $arr_invoice)
+									if(isset($arr_json['Invoices']))
 									{
-										$invoice_id = $arr_invoice['DocumentNumber'];
-										$invoice_name = $arr_invoice['CustomerName']." - ".$arr_invoice['DocumentNumber'];
-										$invoice_balance = $arr_invoice['Balance'];
-										$invoice_booked = $arr_invoice['Booked'];
-										$invoice_cancelled = $arr_invoice['Cancelled'];
-										$invoice_currency = $arr_invoice['Currency'];
-										$invoice_customer_name = $arr_invoice['CustomerName'];
-										$invoice_customer_number = $arr_invoice['CustomerNumber'];
-										$invoice_due_date = date("Y-m-d H:i:s", strtotime($arr_invoice['DueDate']." 00:00:00"));
-										$invoice_created = date("Y-m-d H:i:s", strtotime($arr_invoice['InvoiceDate']." 00:00:00"));
-										$invoice_invoice_type = $arr_invoice['InvoiceType'];
-										$invoice_voucher_number = $arr_invoice['VoucherNumber'];
-										$invoice_voucher_series = $arr_invoice['VoucherSeries'];
-										$invoice_voucher_year = $arr_invoice['VoucherYear'];
-										$invoice_way_of_delivery = $arr_invoice['WayOfDelivery'];
-										$invoice_terms_of_payment = $arr_invoice['TermsOfPayment'];
-										$invoice_project = $arr_invoice['Project'];
-										$invoice_sent = $arr_invoice['Sent'];
-										$invoice_total = $arr_invoice['Total'];
-										$invoice_final_pay_date = date("Y-m-d H:i:s", strtotime($arr_invoice['FinalPayDate']." 00:00:00"));
-
-										$post_customer_id = $this->insert_or_update_customer(array('id' => $invoice_customer_number, 'name' => $invoice_customer_name));
-
-										$post_data = array(
-											'post_type' => $this->post_type_invoices,
-											'post_status' => 'publish',
-											'post_title' => $invoice_name,
-											'meta_input' => array(
-												$this->meta_prefix.'invoice_id' => $invoice_id,
-												$this->meta_prefix.'post_customer_id' => $post_customer_id,
-												$this->meta_prefix.'invoice_balance' => $invoice_balance,
-												$this->meta_prefix.'invoice_booked' => $invoice_booked,
-												$this->meta_prefix.'invoice_cancelled' => $invoice_cancelled,
-												$this->meta_prefix.'invoice_currency' => $invoice_currency,
-												$this->meta_prefix.'invoice_due_date' => $invoice_due_date,
-												$this->meta_prefix.'invoice_invoice_type' => $invoice_invoice_type,
-												$this->meta_prefix.'invoice_voucher_number' => $invoice_voucher_number,
-												$this->meta_prefix.'invoice_voucher_series' => $invoice_voucher_series,
-												$this->meta_prefix.'invoice_voucher_year' => $invoice_voucher_year,
-												$this->meta_prefix.'invoice_way_of_delivery' => $invoice_way_of_delivery,
-												$this->meta_prefix.'invoice_terms_of_payment' => $invoice_terms_of_payment,
-												$this->meta_prefix.'invoice_project' => $invoice_project,
-												$this->meta_prefix.'invoice_sent' => $invoice_sent,
-												$this->meta_prefix.'invoice_total' => $invoice_total,
-												$this->meta_prefix.'invoice_final_pay_date' => $invoice_final_pay_date,
-											),
-										);
-
-										$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_date, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'invoice_id', $this->post_type_invoices, $invoice_id));
-										$invoice_amount = count($result);
-
-										if($invoice_amount > 0)
+										foreach($arr_json['Invoices'] as $arr_invoice)
 										{
-											$i = 0;
+											$invoice_id = $arr_invoice['DocumentNumber'];
+											$invoice_name = "#".$arr_invoice['DocumentNumber'];
+											$invoice_balance = $arr_invoice['Balance'];
+											$invoice_booked = $arr_invoice['Booked'];
+											$invoice_cancelled = $arr_invoice['Cancelled'];
+											$invoice_currency = $arr_invoice['Currency'];
+											$invoice_customer_name = $arr_invoice['CustomerName'];
+											$invoice_customer_number = $arr_invoice['CustomerNumber'];
+											$invoice_due_date = date("Y-m-d H:i:s", strtotime($arr_invoice['DueDate']." 00:00:00"));
+											$invoice_created = date("Y-m-d H:i:s", strtotime($arr_invoice['InvoiceDate']." 00:00:00"));
+											$invoice_invoice_type = $arr_invoice['InvoiceType'];
+											$invoice_voucher_number = $arr_invoice['VoucherNumber'];
+											$invoice_voucher_series = $arr_invoice['VoucherSeries'];
+											$invoice_voucher_year = $arr_invoice['VoucherYear'];
+											$invoice_way_of_delivery = $arr_invoice['WayOfDelivery'];
+											$invoice_terms_of_payment = $arr_invoice['TermsOfPayment'];
+											$invoice_project = $arr_invoice['Project'];
+											$invoice_sent = $arr_invoice['Sent'];
+											$invoice_total = $arr_invoice['Total'];
+											$invoice_final_pay_date = date("Y-m-d H:i:s", strtotime($arr_invoice['FinalPayDate']." 00:00:00"));
 
-											foreach($result as $r)
+											$post_customer_id = $this->save_customer(array('id' => $invoice_customer_number, 'name' => $invoice_customer_name));
+
+											$post_data = array(
+												'post_type' => $this->post_type_invoices,
+												'post_status' => 'publish',
+												'post_title' => $invoice_name,
+												'meta_input' => array(
+													$this->meta_prefix.'invoice_id' => $invoice_id,
+													$this->meta_prefix.'post_customer_id' => $post_customer_id,
+													$this->meta_prefix.'invoice_balance' => $invoice_balance,
+													$this->meta_prefix.'invoice_booked' => $invoice_booked,
+													$this->meta_prefix.'invoice_cancelled' => $invoice_cancelled,
+													$this->meta_prefix.'invoice_currency' => $invoice_currency,
+													$this->meta_prefix.'invoice_due_date' => $invoice_due_date,
+													$this->meta_prefix.'invoice_invoice_type' => $invoice_invoice_type,
+													$this->meta_prefix.'invoice_voucher_number' => $invoice_voucher_number,
+													$this->meta_prefix.'invoice_voucher_series' => $invoice_voucher_series,
+													$this->meta_prefix.'invoice_voucher_year' => $invoice_voucher_year,
+													$this->meta_prefix.'invoice_way_of_delivery' => $invoice_way_of_delivery,
+													$this->meta_prefix.'invoice_terms_of_payment' => $invoice_terms_of_payment,
+													$this->meta_prefix.'invoice_project' => $invoice_project,
+													$this->meta_prefix.'invoice_sent' => $invoice_sent,
+													$this->meta_prefix.'invoice_total' => $invoice_total,
+													$this->meta_prefix.'invoice_final_pay_date' => $invoice_final_pay_date,
+												),
+											);
+
+											$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_date, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'invoice_id', $this->post_type_invoices, $invoice_id));
+											$invoice_amount = count($result);
+
+											if($invoice_amount > 0)
 											{
-												$post_invoice_id = $r->ID;
-												$post_invoice_date = $r->post_date;
-												$post_invoice_modified = $r->post_modified;
+												$i = 0;
 
-												if($i == 0)
+												foreach($result as $r)
 												{
-													if($invoice_created != $post_invoice_date)
-													{
-														//do_log(__FUNCTION__." - Created: ".$post_invoice_date." -> ".$invoice_created, 'publish', false);
+													$post_invoice_id = $r->ID;
+													$post_invoice_date = $r->post_date;
+													$post_invoice_modified = $r->post_modified;
 
-														$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $invoice_created, $post_invoice_id));
+													if($i == 0)
+													{
+														if($invoice_created != $post_invoice_date)
+														{
+															//do_log(__FUNCTION__." - Created: ".$post_invoice_date." -> ".$invoice_created, 'publish', false);
+
+															$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $invoice_created, $post_invoice_id));
+														}
+
+														if($post_invoice_modified < date("Y-m-d H:i:s", strtotime(current_time('mysql')." -4 hour")))
+														{
+															//$post_data = $this->get_invoice_info($arr_invoice, $post_data);
+
+															$post_data['ID'] = $post_invoice_id;
+															$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
+
+															wp_update_post($post_data);
+														}
 													}
 
-													if($post_invoice_modified < date("Y-m-d H:i:s", strtotime(current_time('mysql')." -4 hour")))
+													else
 													{
-														//$post_data = $this->get_invoice_info($arr_invoice, $post_data);
-
-														$post_data['ID'] = $post_invoice_id;
-														$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
-
-														wp_update_post($post_data);
+														wp_trash_post($post_invoice_id);
 													}
-												}
 
-												else
-												{
-													wp_trash_post($post_invoice_id);
+													$i++;
 												}
+											}
 
-												$i++;
+											else
+											{
+												//$post_data = $this->get_invoice_info($arr_invoice, $post_data);
+
+												$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
+
+												$post_invoice_id = wp_insert_post($post_data);
+
+												$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $invoice_created, $post_invoice_id));
 											}
 										}
 
-										else
+										$total_pages = $arr_json['MetaInformation']['@TotalPages'];
+										$current_page = $arr_json['MetaInformation']['@CurrentPage'];
+
+										if($total_pages > $current_page)
 										{
-											//$post_data = $this->get_invoice_info($arr_invoice, $post_data);
+											$data['page'] = ($current_page + 1);
 
-											$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
-
-											$post_invoice_id = wp_insert_post($post_data);
-
-											$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $invoice_created, $post_invoice_id));
+											$this->fetch_from_api($data);
 										}
 									}
 								break;
@@ -811,7 +820,7 @@ class mf_fortnox
 				break;
 
 				case 'payments':
-					$url = "https://api.fortnox.se/3/invoicepayments";
+					$url = "https://api.fortnox.se/3/invoicepayments/".$data['page'];
 
 					$setting_fortnox_access_token = get_option('setting_fortnox_access_token');
 
@@ -860,80 +869,93 @@ class mf_fortnox
 										),
 									)*/
 
-									foreach($arr_json['InvoicePayments'] as $arr_payment)
+									if(isset($arr_json['InvoicePayments']))
 									{
-										$payment_id = $arr_payment['Number'];
-										$payment_name = $arr_payment['Number'];
-										$payment_amount = $arr_payment['Amount'];
-										$payment_booked = $arr_payment['Booked'];
-										$payment_currency = $arr_payment['Currency'];
-										$payment_source = $arr_payment['Source'];
-										$payment_write_off_exists = $arr_payment['WriteOffExist'];
-										$payment_created = date("Y-m-d H:i:s", strtotime($arr_payment['PaymentDate']." 00:00:00"));
-
-										$post_data = array(
-											'post_type' => $this->post_type_payments,
-											'post_status' => 'publish',
-											'post_title' => $payment_name,
-											'meta_input' => array(
-												$this->meta_prefix.'payment_id' => $payment_id,
-												$this->meta_prefix.'payment_amount' => $payment_amount,
-												$this->meta_prefix.'payment_booked' => $payment_booked,
-												$this->meta_prefix.'payment_currency' => $payment_currency,
-												$this->meta_prefix.'payment_source' => $payment_source,
-												$this->meta_prefix.'payment_write_off_exists' => $payment_write_off_exists,
-											),
-										);
-
-										$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_date, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'payment_id', $this->post_type_payments, $payment_id));
-										$payment_amount = count($result);
-
-										if($payment_amount > 0)
+										foreach($arr_json['InvoicePayments'] as $arr_payment)
 										{
-											$i = 0;
+											$payment_id = $arr_payment['Number'];
+											$payment_name = $arr_payment['Number'];
+											$payment_amount = $arr_payment['Amount'];
+											$payment_booked = $arr_payment['Booked'];
+											$payment_currency = $arr_payment['Currency'];
+											$payment_source = $arr_payment['Source'];
+											$payment_write_off_exists = $arr_payment['WriteOffExist'];
+											$payment_created = date("Y-m-d H:i:s", strtotime($arr_payment['PaymentDate']." 00:00:00"));
 
-											foreach($result as $r)
+											$post_data = array(
+												'post_type' => $this->post_type_payments,
+												'post_status' => 'publish',
+												'post_title' => $payment_name,
+												'meta_input' => array(
+													$this->meta_prefix.'payment_id' => $payment_id,
+													$this->meta_prefix.'payment_amount' => $payment_amount,
+													$this->meta_prefix.'payment_booked' => $payment_booked,
+													$this->meta_prefix.'payment_currency' => $payment_currency,
+													$this->meta_prefix.'payment_source' => $payment_source,
+													$this->meta_prefix.'payment_write_off_exists' => $payment_write_off_exists,
+												),
+											);
+
+											$result = $obj_base->get_results($wpdb->prepare("SELECT ID, post_date, post_modified FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'payment_id', $this->post_type_payments, $payment_id));
+											$payment_amount = count($result);
+
+											if($payment_amount > 0)
 											{
-												$post_payment_id = $r->ID;
-												$post_payment_date = $r->post_date;
-												$post_payment_modified = $r->post_modified;
+												$i = 0;
 
-												if($i == 0)
+												foreach($result as $r)
 												{
-													if($payment_created != $post_payment_date)
+													$post_payment_id = $r->ID;
+													$post_payment_date = $r->post_date;
+													$post_payment_modified = $r->post_modified;
+
+													if($i == 0)
 													{
-														$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $payment_created, $post_payment_id));
+														if($payment_created != $post_payment_date)
+														{
+															$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $payment_created, $post_payment_id));
+														}
+
+														if($post_payment_modified < date("Y-m-d H:i:s", strtotime(current_time('mysql')." -4 hour")))
+														{
+															$post_data = $this->get_payment_info($arr_payment, $post_data);
+
+															$post_data['ID'] = $post_payment_id;
+															$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
+
+															wp_update_post($post_data);
+														}
 													}
 
-													if($post_payment_modified < date("Y-m-d H:i:s", strtotime(current_time('mysql')." -4 hour")))
+													else
 													{
-														$post_data = $this->get_payment_info($arr_payment, $post_data);
-
-														$post_data['ID'] = $post_payment_id;
-														$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
-
-														wp_update_post($post_data);
+														wp_trash_post($post_payment_id);
 													}
-												}
 
-												else
-												{
-													wp_trash_post($post_payment_id);
+													$i++;
 												}
+											}
 
-												$i++;
+											else
+											{
+												$post_data = $this->get_payment_info($arr_payment, $post_data);
+
+												$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
+
+												$post_payment_id = wp_insert_post($post_data);
+
+												$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $payment_created, $post_payment_id));
 											}
 										}
 
-										else
+										$total_pages = $arr_json['MetaInformation']['@TotalPages'];
+										$current_page = $arr_json['MetaInformation']['@CurrentPage'];
+
+										if($total_pages > $current_page)
 										{
-											$post_data = $this->get_payment_info($arr_payment, $post_data);
+											$data['page'] = ($current_page + 1);
 
-											$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
-
-											$post_payment_id = wp_insert_post($post_data);
-
-											$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_date = %s WHERE ID = '%d'", $payment_created, $post_payment_id));
+											$this->fetch_from_api($data);
 										}
 									}
 								break;
@@ -968,8 +990,7 @@ class mf_fortnox
 				break;
 
 				case 'vouchers':
-					$url = "https://api.fortnox.se/3/vouchers/?voucherseries=A"; //&accountnumber=1901
-					//https://api.fortnox.se/3/vouchers/?voucherseries=A&page=2
+					$url = "https://api.fortnox.se/3/vouchers/?voucherseries=A&page=".$data['page']; //&accountnumber=1901&financialyear=1
 
 					$setting_fortnox_access_token = get_option('setting_fortnox_access_token');
 
@@ -1110,6 +1131,16 @@ class mf_fortnox
 											{
 												wp_set_post_terms($post_voucher_id, $arr_voucher_tags, $this->taxonomy_tags, false);
 											}*/
+										}
+
+										$total_pages = $arr_json['MetaInformation']['@TotalPages'];
+										$current_page = $arr_json['MetaInformation']['@CurrentPage'];
+
+										if($total_pages > $current_page)
+										{
+											$data['page'] = ($current_page + 1);
+
+											$this->fetch_from_api($data);
 										}
 									break;
 
@@ -1656,7 +1687,7 @@ class mf_fortnox
 		$menu_capability = 'manage_options';
 
 		$menu_title = __("Fortnox", 'lang_fortnox');
-		add_menu_page($menu_title, $menu_title, $menu_capability, $menu_start, '', 'dashicons-cart', 21);
+		add_menu_page($menu_title, $menu_title, $menu_capability, $menu_start, '', 'dashicons-money-alt', 21);
 
 		$menu_title = __("Customers", 'lang_fortnox');
 		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, $menu_start);
@@ -1734,14 +1765,14 @@ class mf_fortnox
 				//$columns['voucher_id'] = __("ID", 'lang_fortnox');
 				$columns['voucher_excerpt'] = __("Description", 'lang_fortnox');
 				$columns['voucher_content'] = __("Information", 'lang_fortnox');
-				$columns['voucher_account'] = __("Account", 'lang_fortnox');
+				//$columns['voucher_account'] = __("Account", 'lang_fortnox');
 				$columns['voucher_amount'] = __("Amount", 'lang_fortnox');
-				$columns['voucher_reference_no'] = __("Reference No.", 'lang_fortnox');
-				$columns['voucher_reference_type'] = __("Reference Type", 'lang_fortnox');
-				$columns['voucher_number'] = __("Number", 'lang_fortnox');
-				$columns['voucher_series'] = __("Series", 'lang_fortnox');
-				$columns['voucher_year'] = __("Year", 'lang_fortnox');
-				$columns['voucher_approval_state'] = __("State", 'lang_fortnox');
+				//$columns['voucher_reference_no'] = __("Reference No.", 'lang_fortnox');
+				//$columns['voucher_reference_type'] = __("Reference Type", 'lang_fortnox');
+				//$columns['voucher_number'] = __("Number", 'lang_fortnox');
+				//$columns['voucher_series'] = __("Series", 'lang_fortnox');
+				//$columns['voucher_year'] = __("Year", 'lang_fortnox');
+				//$columns['voucher_approval_state'] = __("State", 'lang_fortnox');
 				$columns['post_date'] = __("Date", 'lang_fortnox');
 			break;
 		}
@@ -1948,6 +1979,27 @@ class mf_fortnox
 		);*/
 
 		return $meta_boxes;
+	}
+
+	function get_payment_status($payment_status, $data)
+	{
+		global $wpdb;
+
+		//do_log(__FUNCTION__." - 3: get_payment_status + ".var_export($data, true));
+
+		if($data['member_hash'] != '' && $data['payment_amount'] > 0)
+		{
+			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND post_content LIKE %s AND meta_value = %d LIMIT 0, 1", $this->meta_prefix.'voucher_amount', $this->post_type_vouchers, 'publish', $data['member_hash']."%", $data['payment_amount']));
+
+			if($wpdb->num_rows > 0)
+			{
+				$payment_status = 'paid';
+			}
+
+			//do_log(__FUNCTION__." - 4: ".$wpdb->last_query);
+		}
+
+		return $payment_status;
 	}
 
 	function api_fortnox_run()
