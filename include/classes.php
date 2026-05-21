@@ -9,6 +9,7 @@ class mf_fortnox
 	var $post_type_vouchers;
 	var $meta_prefix;
 	var $redirect_uri = "/wp-content/plugins/mf_fortnox/include/api/callback.php";
+	var $default_endpoint_to_fetch = array('invoices', 'payments', 'vouchers');
 
 	function __construct()
 	{
@@ -1301,6 +1302,8 @@ class mf_fortnox
 
 		if($obj_cron->is_running == false)
 		{
+			replace_option(array('old' => 'setting_fortnox_endpoint_to_fetch', 'new' => 'setting_fortnox_endpoints_to_fetch'));
+
 			if(get_option('setting_fortnox_refresh_token') != '')
 			{
 				$this->fetch_from_api(['endpoint' => 'generate_access_token_from_refresh', 'action' => 'insert']);
@@ -1316,13 +1319,38 @@ class mf_fortnox
 				$this->fetch_from_api(['endpoint' => 'generate_access_token_from_tenant_id', 'action' => 'insert']);
 			}
 
-			$this->fetch_from_api(['endpoint' => 'invoices', 'action' => 'insert']);
-			$this->fetch_from_api(['endpoint' => 'payments', 'action' => 'insert']);
-			$this->fetch_from_api(['endpoint' => 'vouchers', 'action' => 'insert']);
+			$setting_fortnox_endpoints_to_fetch = get_option('setting_fortnox_endpoints_to_fetch', $this->default_endpoint_to_fetch);
 
-			/*mf_uninstall_plugin(array(
-				'options' => array('setting_fortnox_tenant_id'),
-			));*/
+			if(is_array($setting_fortnox_endpoints_to_fetch))
+			{
+				foreach($setting_fortnox_endpoints_to_fetch as $endpoint)
+				{
+					//do_log(__FUNCTION__.": Fetching ".$endpoint);
+
+					$this->fetch_from_api(['endpoint' => $endpoint, 'action' => 'insert']);
+				}
+
+				if(!in_array('invoices', $setting_fortnox_endpoints_to_fetch))
+				{
+					mf_uninstall_plugin(array(
+						'post_types' => array($this->post_type_invoices),
+					));
+				}
+
+				if(!in_array('payments', $setting_fortnox_endpoints_to_fetch))
+				{
+					mf_uninstall_plugin(array(
+						'post_types' => array($this->post_type_payments),
+					));
+				}
+
+				if(!in_array('vouchers', $setting_fortnox_endpoints_to_fetch))
+				{
+					mf_uninstall_plugin(array(
+						'post_types' => array($this->post_type_vouchers),
+					));
+				}
+			}
 		}
 
 		$obj_cron->end();
@@ -1352,65 +1380,76 @@ class mf_fortnox
 			'has_archive' => false,
 		));
 
-		register_post_type($this->post_type_invoices, array(
-			'labels' => array(
-				'name' => __("Invoices", 'lang_fortnox'),
-				'singular_name' => __("Invoice", 'lang_fortnox'),
-				'menu_name' => __("Invoices", 'lang_fortnox'),
-				'all_items' => __("List", 'lang_fortnox'),
-				'edit_item' => __("Edit", 'lang_fortnox'),
-				'view_item' => __("View", 'lang_fortnox'),
-				'add_new_item' => __("Add New", 'lang_fortnox'),
-			),
-			'public' => false,
-			'show_ui' => current_user_can('manage_options'),
-			'show_in_menu' => false,
-			'show_in_nav_menus' => false,
-			'show_in_rest' => true,
-			'supports' => array('title', 'editor'),
-			'hierarchical' => true,
-			'has_archive' => false,
-		));
+		$setting_fortnox_endpoints_to_fetch = get_option('setting_fortnox_endpoints_to_fetch', $this->default_endpoint_to_fetch);
 
-		register_post_type($this->post_type_payments, array(
-			'labels' => array(
-				'name' => __("Payments", 'lang_fortnox'),
-				'singular_name' => __("Payment", 'lang_fortnox'),
-				'menu_name' => __("Payments", 'lang_fortnox'),
-				'all_items' => __("List", 'lang_fortnox'),
-				'edit_item' => __("Edit", 'lang_fortnox'),
-				'view_item' => __("View", 'lang_fortnox'),
-				'add_new_item' => __("Add New", 'lang_fortnox'),
-			),
-			'public' => false,
-			'show_ui' => current_user_can('manage_options'),
-			'show_in_menu' => false,
-			'show_in_nav_menus' => false,
-			'show_in_rest' => true,
-			'supports' => array('title', 'editor'),
-			'hierarchical' => true,
-			'has_archive' => false,
-		));
+		if(in_array('invoices', $setting_fortnox_endpoints_to_fetch))
+		{
+			register_post_type($this->post_type_invoices, array(
+				'labels' => array(
+					'name' => __("Invoices", 'lang_fortnox'),
+					'singular_name' => __("Invoice", 'lang_fortnox'),
+					'menu_name' => __("Invoices", 'lang_fortnox'),
+					'all_items' => __("List", 'lang_fortnox'),
+					'edit_item' => __("Edit", 'lang_fortnox'),
+					'view_item' => __("View", 'lang_fortnox'),
+					'add_new_item' => __("Add New", 'lang_fortnox'),
+				),
+				'public' => false,
+				'show_ui' => current_user_can('manage_options'),
+				'show_in_menu' => false,
+				'show_in_nav_menus' => false,
+				'show_in_rest' => true,
+				'supports' => array('title', 'editor'),
+				'hierarchical' => true,
+				'has_archive' => false,
+			));
+		}
 
-		register_post_type($this->post_type_vouchers, array(
-			'labels' => array(
-				'name' => __("Vouchers", 'lang_fortnox'),
-				'singular_name' => __("Voucher", 'lang_fortnox'),
-				'menu_name' => __("Vouchers", 'lang_fortnox'),
-				'all_items' => __("List", 'lang_fortnox'),
-				'edit_item' => __("Edit", 'lang_fortnox'),
-				'view_item' => __("View", 'lang_fortnox'),
-				'add_new_item' => __("Add New", 'lang_fortnox'),
-			),
-			'public' => false,
-			'show_ui' => current_user_can('manage_options'),
-			'show_in_menu' => false,
-			'show_in_nav_menus' => false,
-			'show_in_rest' => true,
-			'supports' => array('title', 'editor'),
-			'hierarchical' => true,
-			'has_archive' => false,
-		));
+		if(in_array('payments', $setting_fortnox_endpoints_to_fetch))
+		{
+			register_post_type($this->post_type_payments, array(
+				'labels' => array(
+					'name' => __("Payments", 'lang_fortnox'),
+					'singular_name' => __("Payment", 'lang_fortnox'),
+					'menu_name' => __("Payments", 'lang_fortnox'),
+					'all_items' => __("List", 'lang_fortnox'),
+					'edit_item' => __("Edit", 'lang_fortnox'),
+					'view_item' => __("View", 'lang_fortnox'),
+					'add_new_item' => __("Add New", 'lang_fortnox'),
+				),
+				'public' => false,
+				'show_ui' => current_user_can('manage_options'),
+				'show_in_menu' => false,
+				'show_in_nav_menus' => false,
+				'show_in_rest' => true,
+				'supports' => array('title', 'editor'),
+				'hierarchical' => true,
+				'has_archive' => false,
+			));
+		}
+
+		if(in_array('vouchers', $setting_fortnox_endpoints_to_fetch))
+		{
+			register_post_type($this->post_type_vouchers, array(
+				'labels' => array(
+					'name' => __("Vouchers", 'lang_fortnox'),
+					'singular_name' => __("Voucher", 'lang_fortnox'),
+					'menu_name' => __("Vouchers", 'lang_fortnox'),
+					'all_items' => __("List", 'lang_fortnox'),
+					'edit_item' => __("Edit", 'lang_fortnox'),
+					'view_item' => __("View", 'lang_fortnox'),
+					'add_new_item' => __("Add New", 'lang_fortnox'),
+				),
+				'public' => false,
+				'show_ui' => current_user_can('manage_options'),
+				'show_in_menu' => false,
+				'show_in_nav_menus' => false,
+				'show_in_rest' => true,
+				'supports' => array('title', 'editor'),
+				'hierarchical' => true,
+				'has_archive' => false,
+			));
+		}
 	}
 
 	function settings_fortnox()
@@ -1433,7 +1472,12 @@ class mf_fortnox
 
 			if(get_option('setting_fortnox_authorization_code') != '' || get_option('setting_fortnox_refresh_token') != '' || get_option('setting_fortnox_access_token') != '' || get_option('option_fortnox_database_number') != '')
 			{
-				$arr_settings['setting_fortnox_endpoint'] = __("Endpoint", 'lang_fortnox');
+				if(get_option('setting_fortnox_access_token') != '')
+				{
+					$arr_settings['setting_fortnox_endpoints_to_fetch'] = __("Endpoint to fetch", 'lang_fortnox');
+				}
+
+				$arr_settings['setting_fortnox_endpoint'] = __("Endpoint to test", 'lang_fortnox');
 				$arr_settings['setting_fortnox_debug'] = __("Debug", 'lang_fortnox');
 			}
 		}
@@ -1610,7 +1654,7 @@ class mf_fortnox
 		}
 	}
 
-	function setting_fortnox_authorization_code_callback() // https://www.fortnox.se/developer/authorization/get-authorization-code
+	function setting_fortnox_authorization_code_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 		$option = get_option($setting_key);
@@ -1618,7 +1662,7 @@ class mf_fortnox
 		echo show_textfield(array('name' => $setting_key, 'value' => $option));
 	}
 
-	function setting_fortnox_access_token_callback() // https://www.fortnox.se/developer/authorization/get-access-token
+	function setting_fortnox_access_token_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 		$option = get_option($setting_key);
@@ -1632,6 +1676,19 @@ class mf_fortnox
 		$option = get_option($setting_key);
 
 		echo show_textfield(array('name' => $setting_key, 'value' => $option));
+	}
+
+	function setting_fortnox_endpoints_to_fetch_callback()
+	{
+		$setting_key = get_setting_key(__FUNCTION__);
+		$option = get_option($setting_key, $this->default_endpoint_to_fetch);
+
+		$arr_data = [];
+		$arr_data['invoices'] = __("Invoices", 'lang_fortnox');
+		$arr_data['payments'] = __("Payments", 'lang_fortnox');
+		$arr_data['vouchers'] = __("Vouchers", 'lang_fortnox');
+
+		echo show_select(array('data' => $arr_data, 'name' => $setting_key."[]", 'value' => $option, 'allow_hidden_field' => false));
 	}
 
 	function setting_fortnox_endpoint_callback()
@@ -1692,14 +1749,25 @@ class mf_fortnox
 		$menu_title = __("Customers", 'lang_fortnox');
 		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, $menu_start);
 
-		$menu_title = __("Invoices", 'lang_fortnox');
-		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_invoices);
+		$setting_fortnox_endpoints_to_fetch = get_option('setting_fortnox_endpoints_to_fetch', $this->default_endpoint_to_fetch);
 
-		$menu_title = __("Payments", 'lang_fortnox');
-		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_payments);
+		if(in_array('invoices', $setting_fortnox_endpoints_to_fetch))
+		{
+			$menu_title = __("Invoices", 'lang_fortnox');
+			add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_invoices);
+		}
 
-		$menu_title = __("Vouchers", 'lang_fortnox');
-		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_vouchers);
+		if(in_array('payments', $setting_fortnox_endpoints_to_fetch))
+		{
+			$menu_title = __("Payments", 'lang_fortnox');
+			add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_payments);
+		}
+
+		if(in_array('vouchers', $setting_fortnox_endpoints_to_fetch))
+		{
+			$menu_title = __("Vouchers", 'lang_fortnox');
+			add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_vouchers);
+		}
 
 		if(IS_ADMINISTRATOR)
 		{
@@ -1796,12 +1864,15 @@ class mf_fortnox
 
 						$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND meta_value = %s", $this->meta_prefix.'post_customer_id', $post_type_temp, $post_id));
 
-						echo $wpdb->num_rows;
+						if($wpdb->num_rows > 0)
+						{
+							echo $wpdb->num_rows;
+						}
 
-						if(IS_SUPER_ADMIN && $wpdb->num_rows == 0)
+						/*if(IS_SUPER_ADMIN && $wpdb->num_rows == 0)
 						{
 							echo " (".$wpdb->last_query.")";
-						}
+						}*/
 					break;
 
 					default:
@@ -1825,10 +1896,10 @@ class mf_fortnox
 						{
 							echo get_the_title($customer_id);
 
-							if(IS_SUPER_ADMIN)
+							/*if(IS_SUPER_ADMIN)
 							{
 								echo " (#".$customer_id.")";
-							}
+							}*/
 						}
 					break;
 
@@ -1862,10 +1933,10 @@ class mf_fortnox
 						{
 							echo get_the_title($customer_id);
 
-							if(IS_SUPER_ADMIN)
+							/*if(IS_SUPER_ADMIN)
 							{
 								echo " (#".$customer_id.")";
-							}
+							}*/
 						}
 					break;
 
