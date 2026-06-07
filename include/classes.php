@@ -2089,9 +2089,9 @@ class mf_fortnox
 
 		//do_log(__FUNCTION__." - 3: get_payment_status + ".var_export($data, true));
 
-		if($data['member_hash'] != '' && $data['payment_amount'] > 0)
+		if($data['payment_hash'] != '' && $data['payment_amount'] > 0)
 		{
-			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND post_content LIKE %s AND meta_value = %d LIMIT 0, 1", $this->meta_prefix.'voucher_amount', $this->post_type_vouchers, 'publish', $data['member_hash']."%", $data['payment_amount']));
+			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND post_content LIKE %s AND meta_value = %d LIMIT 0, 1", $this->meta_prefix.'voucher_amount', $this->post_type_vouchers, 'publish', $data['payment_hash']."%", $data['payment_amount']));
 
 			if($wpdb->num_rows > 0)
 			{
