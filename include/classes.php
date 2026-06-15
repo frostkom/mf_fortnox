@@ -2087,18 +2087,20 @@ class mf_fortnox
 	{
 		global $wpdb;
 
-		//do_log(__FUNCTION__." - 3: get_payment_status + ".var_export($data, true));
-
 		if($data['payment_hash'] != '' && $data['payment_amount'] > 0)
 		{
 			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND post_content LIKE %s AND meta_value = %d LIMIT 0, 1", $this->meta_prefix.'voucher_amount', $this->post_type_vouchers, 'publish', $data['payment_hash']."%", $data['payment_amount']));
+			$num_rows = $wpdb->num_rows;
 
-			if($wpdb->num_rows > 0)
+			if($num_rows > 1)
+			{
+				do_log(__FUNCTION__.": ".$num_rows." rows (".$wpdb->last_query.")");
+			}
+
+			else if($num_rows > 0)
 			{
 				$payment_status = 'paid';
 			}
-
-			//do_log(__FUNCTION__." - 4: ".$wpdb->last_query);
 		}
 
 		return $payment_status;
