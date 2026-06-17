@@ -2089,7 +2089,7 @@ class mf_fortnox
 
 		if($data['payment_hash'] != '' && $data['payment_amount'] > 0)
 		{
-			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND post_content LIKE %s AND meta_value = %d LIMIT 0, 1", $this->meta_prefix.'voucher_amount', $this->post_type_vouchers, 'publish', $data['payment_hash']."%", $data['payment_amount']));
+			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND (post_title LIKE %s OR post_content LIKE %s) AND meta_value = %d LIMIT 0, 1", $this->meta_prefix.'voucher_amount', $this->post_type_vouchers, 'publish', "%".$data['payment_hash']."%", $data['payment_hash']."%", $data['payment_amount']));
 			$num_rows = $wpdb->num_rows;
 
 			if($num_rows > 1)
@@ -2100,6 +2100,11 @@ class mf_fortnox
 			else if($num_rows > 0)
 			{
 				$payment_status = 'paid';
+			}
+
+			else
+			{
+				//do_log(__FUNCTION__.": No rows (".$wpdb->last_query.")");
 			}
 		}
 
