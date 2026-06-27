@@ -3,7 +3,7 @@
 Plugin Name: MF Fortnox
 Plugin URI: https://github.com/frostkom/mf_fortnox
 Description: Adds support for communicating with the Fortnox API
-Version: 1.1.8
+Version: 1.2.0
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://martinfors.se

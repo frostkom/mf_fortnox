@@ -10,6 +10,9 @@ class mf_fortnox
 	var $meta_prefix;
 	var $redirect_uri = "/wp-content/plugins/mf_fortnox/include/api/callback.php";
 	var $default_endpoint_to_fetch = array('invoices', 'payments', 'vouchers');
+	var $api_rate_limit_seconds = 5;
+	var $api_rate_limit_requests = 25;
+	var $api_rate_count_requests = 0;
 
 	function __construct()
 	{
@@ -371,6 +374,17 @@ class mf_fortnox
 		return $post_data;
 	}
 
+	function execute_or_delay_request()
+	{
+		if($this->api_rate_count_requests >= $this->api_rate_limit_requests)
+		{
+			sleep($this->api_rate_limit_seconds);
+			$this->api_rate_count_requests = 0;
+		}
+
+		$this->api_rate_count_requests++;
+	}
+
 	function fetch_from_api($data)
 	{
 		global $wpdb, $obj_base;
@@ -439,6 +453,8 @@ class mf_fortnox
 							]);
 						break;
 					}
+
+					$this->execute_or_delay_request();
 
 					list($content, $headers) = get_url_content(array(
 						'url' => $url,
@@ -541,6 +557,8 @@ class mf_fortnox
 						'Authorization: Bearer '.$setting_fortnox_access_token,
 					];
 
+					$this->execute_or_delay_request();
+
 					list($content, $headers) = get_url_content(array(
 						'url' => $url,
 						'catch_head' => true,
@@ -618,6 +636,8 @@ class mf_fortnox
 						'Content-Type: application/json',
 						'Authorization: Bearer '.$setting_fortnox_access_token,
 					];
+
+					$this->execute_or_delay_request();
 
 					list($content, $headers) = get_url_content(array(
 						'url' => $url,
@@ -830,6 +850,8 @@ class mf_fortnox
 						'Authorization: Bearer '.$setting_fortnox_access_token,
 					];
 
+					$this->execute_or_delay_request();
+
 					list($content, $headers) = get_url_content(array(
 						'url' => $url,
 						'catch_head' => true,
@@ -1006,6 +1028,8 @@ class mf_fortnox
 								'Authorization: Bearer '.$setting_fortnox_access_token,
 							];
 
+							$this->execute_or_delay_request();
+
 							list($content, $headers) = get_url_content(array(
 								'url' => $url,
 								'catch_head' => true,
@@ -1171,7 +1195,16 @@ class mf_fortnox
 									switch($data['action'])
 									{
 										case 'insert':
-											do_log($log_message, 'publish', false);
+											switch($http_status)
+											{
+												case 429:
+													
+												break;
+
+												default:
+													do_log($log_message, 'publish', false);
+												break;
+											}
 										break;
 
 										case 'print':
@@ -1200,6 +1233,8 @@ class mf_fortnox
 						'Content-Type: application/json',
 						'Authorization: Bearer '.$setting_fortnox_access_token,
 					];
+
+					$this->execute_or_delay_request();
 
 					list($content, $headers) = get_url_content(array(
 						'url' => $url,
@@ -1330,8 +1365,6 @@ class mf_fortnox
 			{
 				foreach($setting_fortnox_endpoints_to_fetch as $endpoint)
 				{
-					//do_log(__FUNCTION__.": Fetching ".$endpoint);
-
 					$this->fetch_from_api(['endpoint' => $endpoint, 'action' => 'insert']);
 				}
 
