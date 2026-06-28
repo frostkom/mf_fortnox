@@ -1337,6 +1337,8 @@ class mf_fortnox
 
 	function cron_base()
 	{
+		global $wpdb;
+
 		$obj_cron = new mf_cron();
 		$obj_cron->start(__CLASS__);
 
@@ -1389,6 +1391,33 @@ class mf_fortnox
 					));
 				}
 			}
+
+			// Get non-used to reverse find them
+			######################
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_content FROM ".$wpdb->posts." LEFT JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND meta_value IS null AND post_title LIKE '%SARS,SVEN%'", $this->meta_prefix.'voucher_used', $this->post_type_vouchers, 'publish'));
+
+			//do_log(__FUNCTION__.":".__LINE__." (".$wpdb->last_query.")");
+
+			foreach($result as $r)
+			{
+				$voucher_id = $r->ID;
+				$voucher_content = $r->post_content;
+
+				preg_match('/(\S+)\s+\d+/', $voucher_content, $matches);
+				$voucher_hash = $matches[1];
+
+				$voucher_amount = get_post_meta($voucher_id, $this->meta_prefix.'voucher_amount', true);
+
+				$payment_source = array();
+				$payment_source = apply_filters('get_payment_source', $payment_source, array('payment_hash' => $voucher_hash, 'payment_amount' => $voucher_amount));
+
+				if(count($payment_source) > 0)
+				{
+					//update_post_meta($voucher_id, $this->meta_prefix.'voucher_used', 'yes');
+					//update_post_meta($voucher_id, $this->meta_prefix.'voucher_used_info', $payment_source['info']);
+				}
+			}
+			######################
 		}
 
 		$obj_cron->end();
@@ -1903,6 +1932,7 @@ class mf_fortnox
 				//$columns['voucher_reference_type'] = __("Reference Type", 'lang_fortnox');
 				//$columns['voucher_number'] = __("Number", 'lang_fortnox');
 				$columns['voucher_series'] = __("Series", 'lang_fortnox');
+				$columns['voucher_used'] = __("Used", 'lang_fortnox');
 				//$columns['voucher_year'] = __("Year", 'lang_fortnox');
 				//$columns['voucher_approval_state'] = __("State", 'lang_fortnox');
 				$columns['post_date'] = __("Date", 'lang_fortnox');
@@ -2074,6 +2104,17 @@ class mf_fortnox
 						}
 					break;
 
+					case 'voucher_used':
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
+
+						if($post_meta != '')
+						{
+							$post_meta_info = get_post_meta($post_id, $this->meta_prefix.$column.'_info', true);
+
+							echo "<i class='fa ".($post_meta == 'yes' ? "fa-check green" : "fa-times red")." fa-lg' title='".$post_meta_info."'>";
+						}
+					break;
+
 					case 'post_date':
 						$post_date = get_post_field('post_date', $post_id);
 
@@ -2122,7 +2163,7 @@ class mf_fortnox
 
 		if($data['payment_hash'] != '' && $data['payment_amount'] > 0)
 		{
-			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND (post_title LIKE %s OR post_content LIKE %s) AND meta_value = %d LIMIT 0, 1", $this->meta_prefix.'voucher_amount', $this->post_type_vouchers, 'publish', "%".$data['payment_hash']."%", $data['payment_hash']."%", $data['payment_amount']));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND (post_title LIKE %s OR post_content LIKE %s) AND meta_value = %d LIMIT 0, 1", $this->meta_prefix.'voucher_amount', $this->post_type_vouchers, 'publish', "%".$data['payment_hash']."%", $data['payment_hash']."%", $data['payment_amount']));
 			$num_rows = $wpdb->num_rows;
 
 			if($num_rows > 1)
@@ -2133,6 +2174,12 @@ class mf_fortnox
 			else if($num_rows > 0)
 			{
 				$payment_status = 'paid';
+
+				foreach($result as $r)
+				{
+					update_post_meta($r->ID, $this->meta_prefix.'voucher_used', 'yes');
+					update_post_meta($r->ID, $this->meta_prefix.'voucher_used_info', $data['info']);
+				}
 			}
 
 			else
