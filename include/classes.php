@@ -1394,7 +1394,7 @@ class mf_fortnox
 
 			// Get non-used to reverse find them
 			######################
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_content FROM ".$wpdb->posts." LEFT JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND meta_value IS null AND post_title LIKE '%SARS,SVEN%'", $this->meta_prefix.'voucher_used', $this->post_type_vouchers, 'publish'));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_content, post_date FROM ".$wpdb->posts." LEFT JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND post_content LIKE %s AND meta_value IS null", $this->meta_prefix.'voucher_used', $this->post_type_vouchers, 'publish', "%Swishnummer:%"));
 
 			//do_log(__FUNCTION__.":".__LINE__." (".$wpdb->last_query.")");
 
@@ -1402,19 +1402,29 @@ class mf_fortnox
 			{
 				$voucher_id = $r->ID;
 				$voucher_content = $r->post_content;
+				$voucher_date = $r->post_date;
 
 				preg_match('/(\S+)\s+\d+/', $voucher_content, $matches);
-				$voucher_hash = $matches[1];
 
-				$voucher_amount = get_post_meta($voucher_id, $this->meta_prefix.'voucher_amount', true);
-
-				$payment_source = array();
-				$payment_source = apply_filters('get_payment_source', $payment_source, array('payment_hash' => $voucher_hash, 'payment_amount' => $voucher_amount));
-
-				if(count($payment_source) > 0)
+				if(isset($matches[1]))
 				{
-					//update_post_meta($voucher_id, $this->meta_prefix.'voucher_used', 'yes');
-					//update_post_meta($voucher_id, $this->meta_prefix.'voucher_used_info', $payment_source['info']);
+					$voucher_hash = $matches[1];
+
+					$voucher_amount = get_post_meta($voucher_id, $this->meta_prefix.'voucher_amount', true);
+
+					$payment_source = array();
+					$payment_source = apply_filters('get_payment_source', $payment_source, array('payment_hash' => $voucher_hash, 'payment_amount' => $voucher_amount, 'payment_date' => $voucher_date, 'raw' => $voucher_content));
+
+					if(count($payment_source) > 0)
+					{
+						update_post_meta($voucher_id, $this->meta_prefix.'voucher_used', 'yes');
+						update_post_meta($voucher_id, $this->meta_prefix.'voucher_used_info', $payment_source['info']);
+					}
+				}
+
+				else
+				{
+					do_log(__FUNCTION__." - No match: ".$voucher_content);
 				}
 			}
 			######################
