@@ -389,7 +389,7 @@ class mf_fortnox
 	{
 		global $wpdb, $obj_base;
 
-		if(!isset($data['page'])){		$data['page'] = 1;}
+		if(!isset($data['page'])){		$data['page'] = get_option('option_fetch_from_api_'.$data['endpoint'].'_page', 1);}
 		if(!isset($data['endpoint'])){	$data['endpoint'] = get_option('setting_fortnox_endpoint', 'products');}
 
 		$result = array(
@@ -805,8 +805,14 @@ class mf_fortnox
 										if($total_pages > $current_page)
 										{
 											$data['page'] = ($current_page + 1);
+											update_option('option_fetch_from_api_'.$data['endpoint'].'_page', $data['page']);
 
 											$this->fetch_from_api($data);
+										}
+
+										else
+										{
+											delete_option('option_fetch_from_api_'.$data['endpoint'].'_page');
 										}
 									}
 								break;
@@ -977,8 +983,14 @@ class mf_fortnox
 										if($total_pages > $current_page)
 										{
 											$data['page'] = ($current_page + 1);
+											update_option('option_fetch_from_api_'.$data['endpoint'].'_page', $data['page']);
 
 											$this->fetch_from_api($data);
+										}
+
+										else
+										{
+											delete_option('option_fetch_from_api_'.$data['endpoint'].'_page');
 										}
 									}
 								break;
@@ -1168,8 +1180,14 @@ class mf_fortnox
 											if($total_pages > $current_page)
 											{
 												$data['page'] = ($current_page + 1);
+												update_option('option_fetch_from_api_'.$data['endpoint'].'_page', $data['page']);
 
 												$this->fetch_from_api($data);
+											}
+
+											else
+											{
+												delete_option('option_fetch_from_api_'.$data['endpoint'].'_page');
 											}
 										break;
 
@@ -1738,6 +1756,19 @@ class mf_fortnox
 			{
 				echo "<p>".__("Refresh Token", 'lang_fortnox').": ".shorten_text(array('string' => $setting_fortnox_refresh_token, 'limit' => 10))."</p>";
 			}
+
+			$arr_options = [
+				'option_fetch_from_api_invoices_page' => __("Invoices", 'lang_fortnox'),
+				'option_fetch_from_api_payments_page' => __("Payments", 'lang_fortnox'),
+				'option_fetch_from_api_vouchers_page' => __("Vouchers", 'lang_fortnox'),
+			];
+
+			foreach($arr_options as $key => $value)
+			{
+				$option = get_option($key);
+
+				echo "<p>".$value.": ".($option > 0 ? $option : "<span class='grey'>(1)</span>")."</p>";
+			}
 		}
 	}
 
@@ -2149,20 +2180,27 @@ class mf_fortnox
 
 	function rwmb_meta_boxes($meta_boxes)
 	{
-		/*$meta_boxes[] = array(
+		$meta_boxes[] = array(
 			'id' => $this->meta_prefix.'information',
 			'title' => __("Information", 'lang_fortnox'),
-			'post_types' => array($this->post_type),
+			'post_types' => array($this->post_type_vouchers),
 			'context' => 'side',
 			'priority' => 'low',
 			'fields' => array(
 				array(
-					'name' => __("ID", 'lang_fortnox'),
-					'id' => $this->meta_prefix.'customer_id',
+					'name' => __("Used", 'lang_fortnox'),
+					'id' => $this->meta_prefix.'voucher_used',
+					'type' => 'select',
+					'options' => get_yes_no_for_select(array('add_choose_here' => true)),
+					'std' => 'no',
+				),
+				array(
+					'name' => __("Used Info", 'lang_fortnox'),
+					'id' => $this->meta_prefix.'voucher_used_info',
 					'type' => 'text',
 				),
 			)
-		);*/
+		);
 
 		return $meta_boxes;
 	}
