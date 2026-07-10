@@ -4,6 +4,7 @@ class mf_fortnox
 {
 	var $post_type = __CLASS__;
 	var $post_type_customer;
+	//var $post_type_years;
 	var $post_type_invoices;
 	var $post_type_payments;
 	var $post_type_vouchers;
@@ -17,6 +18,7 @@ class mf_fortnox
 	function __construct()
 	{
 		$this->post_type_customer = $this->post_type.'_customer';
+		//$this->post_type_years = $this->post_type.'_years';
 		$this->post_type_invoices = $this->post_type.'_invoices';
 		$this->post_type_payments = $this->post_type.'_payments';
 		$this->post_type_vouchers = $this->post_type.'_vouchers';
@@ -389,8 +391,8 @@ class mf_fortnox
 	{
 		global $wpdb, $obj_base;
 
-		if(!isset($data['page'])){		$data['page'] = get_option_or_default('option_fetch_from_api_'.$data['endpoint'].'_page', get_option_or_default('setting_fortnox_endpoint_page', 1));}
 		if(!isset($data['endpoint'])){	$data['endpoint'] = get_option('setting_fortnox_endpoint', 'products');}
+		if(!isset($data['page'])){		$data['page'] = get_option_or_default('option_fetch_from_api_'.$data['endpoint'].'_page', get_option_or_default('setting_fortnox_endpoint_page', 1));}
 
 		$result = array(
 			'success' => false,
@@ -625,6 +627,12 @@ class mf_fortnox
 							}
 						break;
 					}
+				break;
+
+				case 'financialyears':
+					$url = "https://api.fortnox.se/3/financialyears";
+
+					// Do what?
 				break;
 
 				case 'invoices':
@@ -1029,7 +1037,7 @@ class mf_fortnox
 
 					if($setting_fortnox_vouchers_series != '')
 					{
-						$url = "https://api.fortnox.se/3/vouchers/?voucherseries=".$setting_fortnox_vouchers_series."&page=".$data['page']; //&accountnumber=1901&financialyear=1
+						$url = "https://api.fortnox.se/3/vouchers/?financialyeardate=".date("Y-m-d")."&voucherseries=".$setting_fortnox_vouchers_series."&page=".$data['page']; //&accountnumber=1901&financialyear=1
 
 						$setting_fortnox_access_token = get_option('setting_fortnox_access_token');
 
@@ -1187,13 +1195,13 @@ class mf_fortnox
 
 											else
 											{
-												//delete_option('option_fetch_from_api_'.$data['endpoint'].'_page');
+												delete_option('option_fetch_from_api_'.$data['endpoint'].'_page');
 											}
 										break;
 
 										case 'print':
 											$result['success'] = true;
-											$result['html'] .= "HTTP Status: ".$headers['http_code']." -> ".var_export($arr_json, true);
+											$result['html'] .= "HTTP Status: ".$url." -> ".$headers['http_code']." -> ".var_export($arr_json, true);
 										break;
 									}
 								break;
@@ -1216,7 +1224,7 @@ class mf_fortnox
 											switch($http_status)
 											{
 												case 429:
-													
+													// Do what?
 												break;
 
 												default:
@@ -1474,6 +1482,26 @@ class mf_fortnox
 			'hierarchical' => true,
 			'has_archive' => false,
 		));
+
+		/*register_post_type($this->post_type_years, array(
+			'labels' => array(
+				'name' => __("Years", 'lang_fortnox'),
+				'singular_name' => __("Year", 'lang_fortnox'),
+				'menu_name' => __("Years", 'lang_fortnox'),
+				'all_items' => __("List", 'lang_fortnox'),
+				'edit_item' => __("Edit", 'lang_fortnox'),
+				'view_item' => __("View", 'lang_fortnox'),
+				'add_new_item' => __("Add New", 'lang_fortnox'),
+			),
+			'public' => false,
+			'show_ui' => current_user_can('manage_options'),
+			'show_in_menu' => false,
+			'show_in_nav_menus' => false,
+			'show_in_rest' => true,
+			'supports' => array('title'),
+			'hierarchical' => true,
+			'has_archive' => false,
+		));*/
 
 		$setting_fortnox_endpoints_to_fetch = get_option('setting_fortnox_endpoints_to_fetch', $this->default_endpoint_to_fetch);
 
@@ -1888,6 +1916,9 @@ class mf_fortnox
 
 		$menu_title = __("Customers", 'lang_fortnox');
 		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, $menu_start);
+		
+		//$menu_title = __("Years", 'lang_fortnox');
+		//add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_years);
 
 		$setting_fortnox_endpoints_to_fetch = get_option('setting_fortnox_endpoints_to_fetch', $this->default_endpoint_to_fetch);
 
