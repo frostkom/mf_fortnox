@@ -389,7 +389,7 @@ class mf_fortnox
 	{
 		global $wpdb, $obj_base;
 
-		if(!isset($data['page'])){		$data['page'] = get_option('option_fetch_from_api_'.$data['endpoint'].'_page', 1);}
+		if(!isset($data['page'])){		$data['page'] = get_option_or_default('option_fetch_from_api_'.$data['endpoint'].'_page', get_option_or_default('setting_fortnox_endpoint_page', 1));}
 		if(!isset($data['endpoint'])){	$data['endpoint'] = get_option('setting_fortnox_endpoint', 'products');}
 
 		$result = array(
@@ -812,7 +812,7 @@ class mf_fortnox
 
 										else
 										{
-											delete_option('option_fetch_from_api_'.$data['endpoint'].'_page');
+											//delete_option('option_fetch_from_api_'.$data['endpoint'].'_page');
 										}
 									}
 								break;
@@ -990,7 +990,7 @@ class mf_fortnox
 
 										else
 										{
-											delete_option('option_fetch_from_api_'.$data['endpoint'].'_page');
+											//delete_option('option_fetch_from_api_'.$data['endpoint'].'_page');
 										}
 									}
 								break;
@@ -1187,7 +1187,7 @@ class mf_fortnox
 
 											else
 											{
-												delete_option('option_fetch_from_api_'.$data['endpoint'].'_page');
+												//delete_option('option_fetch_from_api_'.$data['endpoint'].'_page');
 											}
 										break;
 
@@ -1582,7 +1582,8 @@ class mf_fortnox
 					}
 				}
 
-				$arr_settings['setting_fortnox_endpoint'] = __("Endpoint to test", 'lang_fortnox');
+				$arr_settings['setting_fortnox_endpoint'] = __("Endpoint to Test", 'lang_fortnox');
+				$arr_settings['setting_fortnox_endpoint_page'] = __("Endpoint Page Number", 'lang_fortnox');
 				$arr_settings['setting_fortnox_debug'] = __("Debug", 'lang_fortnox');
 			}
 		}
@@ -1853,6 +1854,14 @@ class mf_fortnox
 		}
 
 		echo show_select(array('data' => $arr_data, 'name' => $setting_key, 'value' => $option, 'allow_hidden_field' => false));
+	}
+
+	function setting_fortnox_endpoint_page_callback()
+	{
+		$setting_key = get_setting_key(__FUNCTION__);
+		$option = get_option($setting_key);
+
+		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option));
 	}
 
 	function setting_fortnox_debug_callback()
