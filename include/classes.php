@@ -1221,7 +1221,7 @@ class mf_fortnox
 									switch($data['action'])
 									{
 										case 'insert':
-											switch($http_status)
+											switch($headers['http_code'])
 											{
 												case 429:
 													// Do what?
@@ -1843,12 +1843,13 @@ class mf_fortnox
 		$setting_key = get_setting_key(__FUNCTION__);
 		$option = get_option($setting_key);
 
-		$arr_data = [];
+		/*$arr_data = [];
 		$arr_data[''] = "-- ".__("Choose Here", 'lang_fortnox')." --";
 		$arr_data['a'] = __("A", 'lang_fortnox');
 		$arr_data['s'] = __("S", 'lang_fortnox');
 
-		echo show_select(array('data' => $arr_data, 'name' => $setting_key, 'value' => $option, 'allow_hidden_field' => false));
+		echo show_select(array('data' => $arr_data, 'name' => $setting_key, 'value' => $option, 'allow_hidden_field' => false));*/
+		echo show_textfield(array('name' => $setting_key, 'value' => $option));
 	}
 
 	function setting_fortnox_endpoint_callback()
