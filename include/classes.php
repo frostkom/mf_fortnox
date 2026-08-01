@@ -94,7 +94,7 @@ class mf_fortnox
 		{
 			$arr_invoice_info = $this->fetch_from_api(['endpoint' => 'invoice', 'url' => $arr_invoice['@url'], 'action' => 'insert']);
 
-			//do_log(__FUNCTION__.": ".var_export($arr_invoice_info, true), 'publish', false);
+			do_log(__FUNCTION__.": ".var_export($arr_invoice_info, true), 'publish', false);
 
 			/*array (
 				'success' => true,
@@ -636,7 +636,7 @@ class mf_fortnox
 				break;
 
 				case 'invoices':
-					$url = "https://api.fortnox.se/3/invoices/".$data['page'];
+					$url = "https://api.fortnox.se/3/invoices?page=".$data['page'];
 
 					$setting_fortnox_access_token = get_option('setting_fortnox_access_token');
 
@@ -855,7 +855,7 @@ class mf_fortnox
 				break;
 
 				case 'payments':
-					$url = "https://api.fortnox.se/3/invoicepayments/".$data['page'];
+					$url = "https://api.fortnox.se/3/invoicepayments?page=".$data['page'];
 
 					$setting_fortnox_access_token = get_option('setting_fortnox_access_token');
 
