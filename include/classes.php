@@ -1592,6 +1592,11 @@ class mf_fortnox
 		{
 			$arr_settings['setting_fortnox_scope'] = __("Scope", 'lang_fortnox');
 
+			if(get_option('option_fortnox_database_number') == '')
+			{
+				$arr_settings['option_fortnox_database_number'] = __("Database Number", 'lang_fortnox');
+			}
+
 			//$arr_settings['setting_fortnox_authorization_code'] = __("Authorization Code", 'lang_fortnox');
 			//$arr_settings['setting_fortnox_access_token'] = __("Access Token", 'lang_fortnox');
 			//$arr_settings['setting_fortnox_refresh_token'] = __("Refresh Token", 'lang_fortnox');
@@ -1799,6 +1804,14 @@ class mf_fortnox
 				echo "<p>".$value.": ".($option > 0 ? $option : "<span class='grey'>(1)</span>")."</p>";
 			}
 		}
+	}
+
+	function option_fortnox_database_number_callback()
+	{
+		$setting_key = get_setting_key(__FUNCTION__);
+		$option = get_option($setting_key);
+
+		echo show_textfield(array('name' => $setting_key, 'value' => $option));
 	}
 
 	function setting_fortnox_authorization_code_callback()
@@ -2252,12 +2265,15 @@ class mf_fortnox
 
 		if($data['payment_hash'] != '' && $data['payment_amount'] > 0)
 		{
+			$payment_status_orig = $payment_status;
+
 			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = %s WHERE post_type = %s AND post_status = %s AND (post_title LIKE %s OR post_content LIKE %s) AND meta_value = %d LIMIT 0, 1", $this->meta_prefix.'voucher_amount', $this->post_type_vouchers, 'publish', "%".$data['payment_hash']."%", $data['payment_hash']."%", $data['payment_amount']));
+			$last_query = $wpdb->last_query;
 			$num_rows = $wpdb->num_rows;
 
 			if($num_rows > 1)
 			{
-				do_log(__FUNCTION__.": ".$num_rows." rows (".$wpdb->last_query.")");
+				do_log(__FUNCTION__.": ".$num_rows." rows (".$last_query.")");
 			}
 
 			else if($num_rows > 0)
@@ -2273,8 +2289,10 @@ class mf_fortnox
 
 			else
 			{
-				//do_log(__FUNCTION__.": No rows (".$wpdb->last_query.")");
+				//do_log(__FUNCTION__.": No rows (".$last_query.")");
 			}
+
+			//do_log(__FUNCTION__." - Debug: ".$payment_status_orig." -> ".$payment_status." (".var_export($data, true)." -> ".$last_query." -> ".$num_rows.")");
 		}
 
 		return $payment_status;
