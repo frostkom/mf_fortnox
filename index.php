@@ -3,7 +3,7 @@
 Plugin Name: MF Fortnox
 Plugin URI: https://github.com/frostkom/mf_fortnox
 Description: Adds support for communicating with the Fortnox API
-Version: 1.2.8
+Version: 1.2.9
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://martinfors.se
@@ -59,7 +59,7 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 		$obj_fortnox = new mf_fortnox();
 
 		mf_uninstall_plugin(array(
-			'options' => array('setting_fortnox_client_id', 'setting_fortnox_client_secret', 'setting_fortnox_scope', 'option_fortnox_scope', 'option_fortnox_database_number', 'setting_fortnox_authorization_code', 'setting_fortnox_access_token', 'setting_fortnox_refresh_token', 'setting_fortnox_endpoint', 'setting_fortnox_endpoint_page', 'setting_fortnox_vouchers_series', 'setting_fortnox_debug', 'option_fetch_from_api_invoices_page', 'option_fetch_from_api_payments_page', 'option_fetch_from_api_vouchers_page'),
+			'options' => array('setting_fortnox_client_id', 'setting_fortnox_client_secret', 'setting_fortnox_scope', 'option_fortnox_scope', 'option_fortnox_database_number', 'setting_fortnox_authorization_code', 'setting_fortnox_access_token', 'setting_fortnox_refresh_token', 'setting_fortnox_endpoint', 'setting_fortnox_endpoint_page', 'setting_fortnox_vouchers_series', 'setting_fortnox_debug', 'option_fetch_from_api_invoices_page', 'option_fetch_from_api_payments_page', 'option_fetch_from_api_vouchers_page', 'option_fetch_from_api_vouchers_lastmodified'),
 			'post_types' => array($obj_fortnox->post_type),
 		));
 	}

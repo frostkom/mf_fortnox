@@ -391,8 +391,9 @@ class mf_fortnox
 	{
 		global $wpdb, $obj_base;
 
-		if(!isset($data['endpoint'])){	$data['endpoint'] = get_option('setting_fortnox_endpoint', 'products');}
-		if(!isset($data['page'])){		$data['page'] = get_option_or_default('option_fetch_from_api_'.$data['endpoint'].'_page', get_option_or_default('setting_fortnox_endpoint_page', 1));}
+		if(!isset($data['endpoint'])){		$data['endpoint'] = get_option('setting_fortnox_endpoint', 'products');}
+		if(!isset($data['lastmodified'])){	$data['lastmodified'] = get_option_or_default('option_fetch_from_api_'.$data['endpoint'].'_lastmodified');}
+		if(!isset($data['page'])){			$data['page'] = get_option_or_default('option_fetch_from_api_'.$data['endpoint'].'_page', get_option_or_default('setting_fortnox_endpoint_page', 1));}
 
 		$result = array(
 			'success' => false,
@@ -1037,7 +1038,7 @@ class mf_fortnox
 
 					if($setting_fortnox_vouchers_series != '')
 					{
-						$url = "https://api.fortnox.se/3/vouchers/?financialyeardate=".date("Y-m-d")."&voucherseries=".$setting_fortnox_vouchers_series."&page=".$data['page']; //&accountnumber=1901&financialyear=1
+						$url = "https://api.fortnox.se/3/vouchers/?financialyeardate=".date("Y-m-d")."&voucherseries=".$setting_fortnox_vouchers_series.($data['lastmodified'] > DEFAULT_DATE ? "&lastmodified=".urlencode($data['lastmodified']) : "")."&page=".$data['page'];
 
 						$setting_fortnox_access_token = get_option('setting_fortnox_access_token');
 
@@ -1196,6 +1197,7 @@ class mf_fortnox
 											else
 											{
 												delete_option('option_fetch_from_api_'.$data['endpoint'].'_page');
+												update_option('option_fetch_from_api_'.$data['endpoint'].'_lastmodified', date("Y-m-d H:i"));
 											}
 										break;
 
