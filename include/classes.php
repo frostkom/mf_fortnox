@@ -2001,11 +2001,42 @@ class mf_fortnox
 		return $orderby_statement;
 	}
 
-	function column_header($columns)
+	function restrict_manage_posts()
 	{
 		global $post_type;
 
-		//do_action('load_font_awesome');
+		if($post_type == $this->post_type_vouchers)
+		{
+			$strFilterUsed = check_var('strFilterUsed');
+
+			echo show_select(array('data' => get_yes_no_for_select(array('choose_here_text' => __("Used", 'lang_fortnox'))), 'name' => 'strFilterUsed', 'value' => $strFilterUsed));
+		}
+	}
+
+	function pre_get_posts($wp_query)
+	{
+		global $post_type, $pagenow;
+
+		if($pagenow == 'edit.php' && $post_type == $this->post_type_vouchers)
+		{
+			$strFilterUsed = check_var('strFilterUsed');
+
+			if($strFilterUsed != '')
+			{
+				$wp_query->query_vars['meta_query'] = array(
+					array(
+						'key' => $this->meta_prefix.'voucher_used',
+						'value' => $strFilterUsed,
+						'compare' => '=',
+					),
+				);
+			}
+		}
+	}
+
+	function column_header($columns)
+	{
+		global $post_type;
 
 		unset($columns['date']);
 
@@ -2308,9 +2339,10 @@ class mf_fortnox
 			else
 			{
 				//do_log(__FUNCTION__.": No rows (".$last_query.")");
+				update_post_meta($r->ID, $this->meta_prefix.'voucher_used', 'no');
 			}
 
-			//do_log(__FUNCTION__." - Debug: ".$payment_status_orig." -> ".$payment_status." (".var_export($data, true)." -> ".$last_query." -> ".$num_rows.")");
+			do_log(__FUNCTION__." - Debug: ".$payment_status_orig." -> ".$payment_status." (".var_export($data, true)." -> ".$last_query." -> ".$num_rows.")");
 		}
 
 		return $payment_status;

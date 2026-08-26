@@ -3,7 +3,7 @@
 Plugin Name: MF Fortnox
 Plugin URI: https://github.com/frostkom/mf_fortnox
 Description: Adds support for communicating with the Fortnox API
-Version: 1.2.10
+Version: 1.2.11
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://martinfors.se
@@ -32,6 +32,9 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 		add_action('admin_menu', array($obj_fortnox, 'admin_menu'));
 
 		add_filter('posts_orderby', array($obj_fortnox, 'posts_orderby'), 10, 2);
+
+		add_action('restrict_manage_posts', array($obj_fortnox, 'restrict_manage_posts'));
+		add_action('pre_get_posts', array($obj_fortnox, 'pre_get_posts'));
 
 		add_filter('manage_'.$obj_fortnox->post_type_customer.'_posts_columns', array($obj_fortnox, 'column_header'), 5);
 		add_action('manage_'.$obj_fortnox->post_type_customer.'_posts_custom_column', array($obj_fortnox, 'column_cell'), 5, 2);
