@@ -2023,13 +2023,37 @@ class mf_fortnox
 
 			if($strFilterUsed != '')
 			{
-				$wp_query->query_vars['meta_query'] = array(
-					array(
-						'key' => $this->meta_prefix.'voucher_used',
-						'value' => $strFilterUsed,
-						'compare' => '=',
-					),
-				);
+				if($strFilterUsed == 'no')
+				{
+					$wp_query->query_vars['meta_query'] = array(
+						'relation' => 'OR',
+						array(
+							'key' => $this->meta_prefix . 'voucher_used',
+							'value' => 'no',
+							'compare' => '=',
+						),
+						array(
+							'key' => $this->meta_prefix . 'voucher_used',
+							'value' => '',
+							'compare' => '=',
+						),
+						array(
+							'key' => $this->meta_prefix . 'voucher_used',
+							'compare' => 'NOT EXISTS',
+						),
+					);
+				}
+
+				else
+				{
+					$wp_query->query_vars['meta_query'] = array(
+						array(
+							'key' => $this->meta_prefix . 'voucher_used',
+							'value' => $strFilterUsed,
+							'compare' => '=',
+						),
+					);
+				}
 			}
 		}
 	}
@@ -2339,10 +2363,9 @@ class mf_fortnox
 			else
 			{
 				//do_log(__FUNCTION__.": No rows (".$last_query.")");
-				update_post_meta($r->ID, $this->meta_prefix.'voucher_used', 'no');
 			}
 
-			do_log(__FUNCTION__." - Debug: ".$payment_status_orig." -> ".$payment_status." (".var_export($data, true)." -> ".$last_query." -> ".$num_rows.")");
+			//do_log(__FUNCTION__." - Debug: ".$payment_status_orig." -> ".$payment_status." (".var_export($data, true)." -> ".$last_query." -> ".$num_rows.")");
 		}
 
 		return $payment_status;
