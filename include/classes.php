@@ -2000,6 +2000,25 @@ class mf_fortnox
 
 		return $orderby_statement;
 	}
+	
+	function get_vouchers_series_for_select()
+	{
+		$arr_data = [];
+
+		$setting_fortnox_vouchers_series = get_option('setting_fortnox_vouchers_series');
+
+		if($setting_fortnox_vouchers_series != '')
+		{
+			$arr_data[''] = "-- ".__("Series", 'lang_fortnox')." --";
+
+			foreach(explode(",", trim($setting_fortnox_vouchers_series)) as $str_series)
+			{
+				$arr_data[$str_series] = $str_series;
+			}
+		}
+
+		return $arr_data;
+	}
 
 	function restrict_manage_posts()
 	{
@@ -2007,6 +2026,10 @@ class mf_fortnox
 
 		if($post_type == $this->post_type_vouchers)
 		{
+			$strFilterSeries = check_var('strFilterSeries');
+
+			echo show_select(array('data' => $this->get_vouchers_series_for_select(), 'name' => 'strFilterSeries', 'value' => $strFilterSeries));
+			
 			$strFilterUsed = check_var('strFilterUsed');
 
 			echo show_select(array('data' => get_yes_no_for_select(array('choose_here_text' => __("Used", 'lang_fortnox'))), 'name' => 'strFilterUsed', 'value' => $strFilterUsed));
@@ -2019,6 +2042,19 @@ class mf_fortnox
 
 		if($pagenow == 'edit.php' && $post_type == $this->post_type_vouchers)
 		{
+			$strFilterSeries = check_var('strFilterSeries');
+
+			if($strFilterSeries != '')
+			{
+				$wp_query->query_vars['meta_query'] = array(
+					array(
+						'key' => $this->meta_prefix.'voucher_series',
+						'value' => $strFilterSeries,
+						'compare' => '=',
+					),
+				);
+			}
+
 			$strFilterUsed = check_var('strFilterUsed');
 
 			if($strFilterUsed != '')
@@ -2028,17 +2064,17 @@ class mf_fortnox
 					$wp_query->query_vars['meta_query'] = array(
 						'relation' => 'OR',
 						array(
-							'key' => $this->meta_prefix . 'voucher_used',
+							'key' => $this->meta_prefix.'voucher_used',
 							'value' => 'no',
 							'compare' => '=',
 						),
 						array(
-							'key' => $this->meta_prefix . 'voucher_used',
+							'key' => $this->meta_prefix.'voucher_used',
 							'value' => '',
 							'compare' => '=',
 						),
 						array(
-							'key' => $this->meta_prefix . 'voucher_used',
+							'key' => $this->meta_prefix.'voucher_used',
 							'compare' => 'NOT EXISTS',
 						),
 					);
@@ -2048,7 +2084,7 @@ class mf_fortnox
 				{
 					$wp_query->query_vars['meta_query'] = array(
 						array(
-							'key' => $this->meta_prefix . 'voucher_used',
+							'key' => $this->meta_prefix.'voucher_used',
 							'value' => $strFilterUsed,
 							'compare' => '=',
 						),
