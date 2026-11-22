@@ -1948,7 +1948,7 @@ class mf_fortnox
 
 		$menu_title = __("Customers", 'lang_fortnox');
 		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, $menu_start);
-		
+
 		//$menu_title = __("Years", 'lang_fortnox');
 		//add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_years);
 
@@ -2000,7 +2000,7 @@ class mf_fortnox
 
 		return $orderby_statement;
 	}
-	
+
 	function get_vouchers_series_for_select()
 	{
 		$arr_data = [];
@@ -2029,7 +2029,7 @@ class mf_fortnox
 			$strFilterSeries = check_var('strFilterSeries');
 
 			echo show_select(array('data' => $this->get_vouchers_series_for_select(), 'name' => 'strFilterSeries', 'value' => $strFilterSeries));
-			
+
 			$strFilterUsed = check_var('strFilterUsed');
 
 			echo show_select(array('data' => get_yes_no_for_select(array('choose_here_text' => __("Used", 'lang_fortnox'))), 'name' => 'strFilterUsed', 'value' => $strFilterUsed));
@@ -2411,6 +2411,7 @@ class mf_fortnox
 	{
 		$result = $this->fetch_from_api(array('action' => 'print'));
 
+		nocache_headers();
 		header('Content-Type: application/json');
 		echo json_encode($result);
 		die();
