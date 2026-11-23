@@ -2,7 +2,6 @@
 
 if(!defined('ABSPATH'))
 {
-	nocache_headers();
 	header('Content-Type: application/json');
 
 	$folder = str_replace("/wp-content/plugins/mf_fortnox/include/api", "/", dirname(__FILE__));
